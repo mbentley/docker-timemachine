@@ -1,17 +1,15 @@
-FROM debian:sid
+FROM debian:jessie
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
-
-#RUN apt-get update && apt-get install -y netatalk avahi-daemon && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y avahi-daemon && rm -rf /var/lib/apt/lists/*
 
 ENV NETATALK_VERSION 3.1.7
 
 RUN apt-get update &&\
-  apt-get install -y --no-install-recommends curl tracker build-essential libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev &&\
-  mkdir -p "/usr/src/netatalk/netatalk-${NETATALK_VERSION}" &&\
-  cd "/usr/src/netatalk/netatalk-${NETATALK_VERSION}" &&\
+  apt-get install -y avahi-daemon supervisor &&\
+  apt-get install -y --no-install-recommends build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
+  mkdir -p /tmp/netatalk-${NETATALK_VERSION} &&\
+  cd /tmp/netatalk-${NETATALK_VERSION} &&\
   curl "http://download.openpkg.org/components/cache/netatalk/netatalk-${NETATALK_VERSION}.tar.bz2" \
-  | tar xj --directory "/usr/src/netatalk/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
+  | tar xj --directory "/tmp/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
   ./configure \
     --with-init-style=debian-sysv \
     --with-cracklib \
@@ -23,19 +21,22 @@ RUN apt-get update &&\
     --with-tracker-pkgconfig-version=0.16 &&\
   make &&\
   make install &&\
+  apt-get purge -y build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
+  apt-get install -y libavahi-client3 libcrack2 libldap-2.4-2 libmysqlclient18 libwrap0 &&\
   apt-get -y autoremove &&\
-  apt-get -y clean &&\
   rm -rf /var/lib/apt/lists/* &&\
+  cd &&\
+  mkdir /var/run/dbus &&\
   rm -rf /tmp/*
 
-RUN useradd -d /backup -m timemachine &&\
+RUN useradd -d /opt/timemachine -m timemachine &&\
   echo timemachine:timemachine | chpasswd
-
-RUN mkdir /var/run/dbus
 
 COPY afp.conf /etc/netatalk/afp.conf
 COPY entrypoint.sh /entrypoint.sh
+COPY supervisord.conf /etc/supervisord.conf
 
-VOLUME ["/backup"]
 EXPOSE 548
-CMD ["/entrypoint.sh"]
+VOLUME ["/opt/timemachine"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
