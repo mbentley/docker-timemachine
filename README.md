@@ -26,3 +26,5 @@ Default credentials:
 Optionally, you can change the default password via the `PASSWORD` environment variable.
 
 If you're using an external volume like in the example above, you may need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
+
+Thanks for [odarriba](https://github.com/odarriba) and [arve0](https://github.com/arve0) for their examples to start from.
