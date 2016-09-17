@@ -1,7 +1,7 @@
 FROM debian:jessie
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
 
-ENV NETATALK_VERSION 3.1.7
+ENV NETATALK_VERSION 3.1.10
 
 RUN apt-get update &&\
   apt-get install -y avahi-daemon supervisor &&\
@@ -37,6 +37,6 @@ COPY entrypoint.sh /entrypoint.sh
 COPY supervisord.conf /etc/supervisord.conf
 
 EXPOSE 548
-VOLUME ["/opt/timemachine"]
+VOLUME ["/opt/timemachine","/var/log/"]
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
