@@ -13,6 +13,7 @@ docker run -d --restart=always \
   --net=host \
   --name timemachine \
   -v /opt/timemachine:/opt/timemachine \
+  -v timemachine-logs:/var/log \
   mbentley/timemachine:latest
 ```
 

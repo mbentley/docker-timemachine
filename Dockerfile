@@ -8,8 +8,8 @@ RUN apt-get update &&\
   apt-get install -y --no-install-recommends build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
   mkdir -p /tmp/netatalk-${NETATALK_VERSION} &&\
   cd /tmp/netatalk-${NETATALK_VERSION} &&\
-  curl "http://download.openpkg.org/components/cache/netatalk/netatalk-${NETATALK_VERSION}.tar.bz2" \
-  | tar xj --directory "/tmp/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
+  curl "http://ufpr.dl.sourceforge.net/project/netatalk/netatalk/${NETATALK_VERSION}/netatalk-${NETATALK_VERSION}.tar.gz" \
+  | tar zx --directory "/tmp/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
   ./configure \
     --with-init-style=debian-sysv \
     --with-cracklib \
@@ -37,6 +37,6 @@ COPY entrypoint.sh /entrypoint.sh
 COPY supervisord.conf /etc/supervisord.conf
 
 EXPOSE 548
-VOLUME ["/opt/timemachine","/var/log/"]
+VOLUME ["/opt/timemachine","/var/log"]
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
