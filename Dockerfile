@@ -37,6 +37,6 @@ COPY entrypoint.sh /entrypoint.sh
 COPY supervisord.conf /etc/supervisord.conf
 
 EXPOSE 548
-VOLUME ["/opt/timemachine","/var/log"]
+VOLUME ["/opt/timemachine","/var/log/supervisor"]
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
