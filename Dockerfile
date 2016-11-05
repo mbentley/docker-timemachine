@@ -33,10 +33,11 @@ RUN useradd -d /opt/timemachine -m timemachine &&\
   echo timemachine:timemachine | chpasswd
 
 COPY afp.conf /etc/netatalk/afp.conf
-COPY entrypoint.sh /entrypoint.sh
 COPY supervisord.conf /etc/supervisord.conf
+COPY entrypoint.sh healthcheck.sh /
 
 EXPOSE 548
 VOLUME ["/opt/timemachine","/var/log/supervisor"]
+HEALTHCHECK --retries=3 --interval=15s --timeout=5s CMD /healthcheck.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
