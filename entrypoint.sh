@@ -6,7 +6,7 @@ then
     echo "Using default password: timemachine"
 else
     echo "Setting password from environment variable"
-    echo timemachine:${PASSWORD} | chpasswd
+    echo timemachine:"${PASSWORD}" | chpasswd
 fi
 
 # cleanup dbus PID file
