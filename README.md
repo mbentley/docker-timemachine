@@ -12,6 +12,8 @@ Example usage:
 docker run -d --restart=always \
   --net=host \
   --name timemachine \
+  -e PASSWORD=timemachine \
+  -e VOLUME_SIZE_LIMIT=1024000 \
   -v /opt/timemachine:/opt/timemachine \
   -v timemachine-logs:/var/log/supervisor \
   mbentley/timemachine:latest
@@ -23,7 +25,9 @@ Default credentials:
   * Username: `timemachine`
   * Password: `timemachine`
 
-Optionally, you can change the default password via the `PASSWORD` environment variable.
+Optional variables:
+  * `PASSWORD` - sets the password for the `timemachine` user (default - `timemachine`)
+  * `VOLUME_SIZE_LIMIT` - sets the maximum size of the time machine backup (default - no limit)
 
 If you're using an external volume like in the example above, you may need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
 

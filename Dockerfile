@@ -1,7 +1,7 @@
 FROM debian:jessie
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
 
-ENV NETATALK_VERSION 3.1.10
+ENV NETATALK_VERSION 3.1.11
 
 RUN apt-get update &&\
   apt-get install -y avahi-daemon supervisor &&\
@@ -32,7 +32,7 @@ RUN apt-get update &&\
 RUN useradd -d /opt/timemachine -m timemachine &&\
   echo timemachine:timemachine | chpasswd
 
-COPY afp.conf /etc/netatalk/afp.conf
+#COPY afp.conf /etc/netatalk/afp.conf
 COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh healthcheck.sh /
 
