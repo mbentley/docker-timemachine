@@ -1,21 +1,10 @@
 #!/bin/bash
 
-# let user know that there is a limit set
-if [ ! -z "${VOLUME_SIZE_LIMIT}" ]
-then
-  echo "'vol size limit' will be set to ${VOLUME_SIZE_LIMIT} MB"
-else
-  echo "'vol size limit' will not be set; no value provided"
-fi
-
-# function to write volume size limit; if set
-volume_limit_size() {
-  if [ ! -z "${VOLUME_SIZE_LIMIT}" ]
-  then
-    echo "  # the max size of the data folder (in MB)"
-    echo "  vol size limit = ${VOLUME_SIZE_LIMIT}"
-  fi
-}
+# set default values
+MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule6,106}"
+VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
+LOG_LEVEL="${LOG_LEVEL:-info}"
+PASSWORD="${PASSWORD:-timemachine}"
 
 # mkdir if needed
 if [ ! -d "/etc/netatalk" ]
@@ -25,8 +14,8 @@ fi
 
 # write afp.conf
 echo "[Global]
-  mimic model = TimeCapsule6,106
-  log level = default:info
+  mimic model = ${MIMIC_MODEL}
+  log level = default:${LOG_LEVEL}
   log file = /dev/stdout
   zeroconf = yes
 
@@ -34,10 +23,11 @@ echo "[Global]
   path = /opt/timemachine
   valid users = timemachine
   time machine = yes
-$(volume_limit_size)" > /etc/netatalk/afp.conf
+  # the max size of the data folder (in MB)
+  vol size limit = ${VOLUME_SIZE_LIMIT}" > /etc/netatalk/afp.conf
 
 # set password if defined
-if [ -z "${PASSWORD}" ]
+if [ "${PASSWORD}" = "timemachine" ]
 then
     echo "Using default password: timemachine"
 else
