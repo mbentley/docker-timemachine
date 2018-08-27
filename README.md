@@ -16,6 +16,7 @@ docker run -d --restart=always \
   -e VOLUME_SIZE_LIMIT="0" \
   -e LOG_LEVEL="info" \
   -e MIMIC_MODEL="TimeCapsule6,106" \
+  -e SHARE_NAME="TimeMachine" \
   -v /opt/timemachine:/opt/timemachine \
   -v timemachine-logs:/var/log/supervisor \
   mbentley/timemachine:latest
@@ -34,5 +35,6 @@ Optional variables:
   * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup
   * `LOG_LEVEL` - (default - `info`) sets the netatalk log level
   * `MIMIC_MODEL` - (default `TimeCapsule6,106`) sets the value of time machine to mimic
+  * `SHARE_NAME` - (default `TimeMachine`) sets the name of the timemachine share to TimeMachine by default
 
 Thanks for [odarriba](https://github.com/odarriba) and [arve0](https://github.com/arve0) for their examples to start from.

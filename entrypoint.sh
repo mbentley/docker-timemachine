@@ -5,6 +5,7 @@ MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule6,106}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 PASSWORD="${PASSWORD:-timemachine}"
+SHARE_NAME="${SHARE_NAME:-TimeMachine}"
 
 # mkdir if needed
 if [ ! -d "/etc/netatalk" ]
@@ -19,7 +20,7 @@ echo "[Global]
   log file = /dev/stdout
   zeroconf = yes
 
-[TimeMachine]
+[${SHARE_NAME}]
   path = /opt/timemachine
   valid users = timemachine
   time machine = yes
