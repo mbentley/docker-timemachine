@@ -9,7 +9,7 @@ PROCESSES="dbus-daemon afpd avahi-daemon"
 # check to see if processes are running
 for i in ${PROCESSES}
 do
-  if ps -ef | grep -v grep | grep ${i} >/dev/null 2>&1
+  if pgrep "${i}" >/dev/null 2>&1
   then
     # process is running
     echo "${i} is running"
