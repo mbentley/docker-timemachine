@@ -5,6 +5,7 @@ MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule6,106}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 PASSWORD="${PASSWORD:-timemachine}"
+SET_PERMISSIONS="${SET_PERMISSIONS:-false}"
 SHARE_NAME="${SHARE_NAME:-TimeMachine}"
 
 # mkdir if needed
@@ -34,6 +35,17 @@ then
 else
     echo "Setting password from environment variable"
     echo timemachine:"${PASSWORD}" | chpasswd
+fi
+
+# set ownership and permissions, if requested
+if [ "${SET_PERMISSIONS}" = "true" ]
+then
+  # set the ownership of /opt/timemachine
+  chown -v timemachine:timemachine /opt/timemachine
+  # change the permissions of /opt/timemachine
+  chmod -v 770 /opt/timemachine
+else
+  echo "SET_PERMISSIONS=false; not setting ownership and permissions"
 fi
 
 # cleanup dbus PID file
