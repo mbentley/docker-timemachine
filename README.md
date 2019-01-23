@@ -19,6 +19,7 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e VOLUME_SIZE_LIMIT="0" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v timemachine-netatalk:/var/netatalk \
   -v timemachine-logs:/var/log/supervisor \
   mbentley/timemachine:latest
 ```
