@@ -34,7 +34,7 @@ Default credentials:
 
 Optional variables:
   * `PASSWORD` - (default - `timemachine`) sets the password for the `timemachine` user
-  * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup
+  * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup in MiB ([mebibyte](https://en.wikipedia.org/wiki/Mebibyte))
   * `LOG_LEVEL` - (default - `info`) sets the netatalk log level
   * `MIMIC_MODEL` - (default `TimeCapsule6,106`) sets the value of time machine to mimic
   * `SET_PERMISSIONS` - (default `false`) set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine`
