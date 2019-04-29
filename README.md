@@ -12,6 +12,7 @@ Example usage:
 docker run -d --restart=always \
   --net=host \
   --name timemachine \
+  -e CUSTOM_AFP_CONF="false" \
   -e LOG_LEVEL="info" \
   -e MIMIC_MODEL="TimeCapsule6,106" \
   -e PASSWORD="timemachine" \
@@ -33,11 +34,12 @@ Default credentials:
   * Password: `timemachine`
 
 Optional variables:
-  * `PASSWORD` - (default - `timemachine`) sets the password for the `timemachine` user
-  * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup in MiB ([mebibyte](https://en.wikipedia.org/wiki/Mebibyte))
+  * `CUSTOM_AFP_CONF` - (default - `false`) indicates that you are going to bind mount a custom config to `/etc/netatalk/afp.conf` if set to `true`
   * `LOG_LEVEL` - (default - `info`) sets the netatalk log level
   * `MIMIC_MODEL` - (default `TimeCapsule6,106`) sets the value of time machine to mimic
+  * `PASSWORD` - (default - `timemachine`) sets the password for the `timemachine` user
   * `SET_PERMISSIONS` - (default `false`) set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine`
   * `SHARE_NAME` - (default `TimeMachine`) sets the name of the timemachine share to TimeMachine by default
+  * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup in MiB ([mebibyte](https://en.wikipedia.org/wiki/Mebibyte))
 
 Thanks for [odarriba](https://github.com/odarriba) and [arve0](https://github.com/arve0) for their examples to start from.
