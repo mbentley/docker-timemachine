@@ -7,6 +7,7 @@ LOG_LEVEL="${LOG_LEVEL:-info}"
 PASSWORD="${PASSWORD:-timemachine}"
 SET_PERMISSIONS="${SET_PERMISSIONS:-false}"
 SHARE_NAME="${SHARE_NAME:-TimeMachine}"
+CUSTOM_AFP_CONF="${CUSTOM_AFP_CONF:-false}"
 
 # mkdir if needed
 if [ ! -d "/etc/netatalk" ]
@@ -14,19 +15,34 @@ then
   mkdir /etc/netatalk
 fi
 
-# write afp.conf
-echo "[Global]
-  mimic model = ${MIMIC_MODEL}
-  log level = default:${LOG_LEVEL}
-  log file = /dev/stdout
-  zeroconf = yes
+# write afp.conf if CUSTOM_AFP_CONF is not true
+if [ "${CUSTOM_AFP_CONF}" != "true" ]
+then
+  echo -n "CUSTOM_AFP_CONF=false; generating /etc/netatalk/afp.conf..."
+  echo "[Global]
+    mimic model = ${MIMIC_MODEL}
+    log level = default:${LOG_LEVEL}
+    log file = /dev/stdout
+    zeroconf = yes
 
-[${SHARE_NAME}]
-  path = /opt/timemachine
-  valid users = timemachine
-  time machine = yes
-  # the max size of the data folder (in MB)
-  vol size limit = ${VOLUME_SIZE_LIMIT}" > /etc/netatalk/afp.conf
+  [${SHARE_NAME}]
+    path = /opt/timemachine
+    valid users = timemachine
+    time machine = yes
+    # the max size of the data folder (in MiB)
+    vol size limit = ${VOLUME_SIZE_LIMIT}" > /etc/netatalk/afp.conf
+    echo "done"
+else
+  # CUSTOM_AFP_CONF was specified; make sure the file exists
+  if [ -f "/etc/netatalk/afp.conf" ]
+  then
+    echo "CUSTOM_AFP_CONF=true; skipping generating afp.conf and using provided /etc/netatalk/afp.conf"
+  else
+    # there is no /etc/netatalk/afp.conf; exit
+    echo "CUSTOM_AFP_CONF=true but you did not bind mount a config to /etc/netatalk/afp.conf; exiting."
+    exit 1
+  fi
+fi
 
 # set password if defined
 if [ "${PASSWORD}" = "timemachine" ]
