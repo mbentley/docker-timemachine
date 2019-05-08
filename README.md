@@ -5,7 +5,7 @@ docker image to run netatalk (compatible Time Machine for OS X)
 based off of debian:jessie
 
 To pull this image:
-`docker pull mbentley/timemachine`
+`docker pull grizmin/timemachine`
 
 Example docker-compose usage:
 ```
