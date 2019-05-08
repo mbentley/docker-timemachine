@@ -7,6 +7,11 @@ based off of debian:jessie
 To pull this image:
 `docker pull mbentley/timemachine`
 
+Example docker-compose usage:
+```
+docker-compose -f timemachine-compose.yml up -d
+```
+
 Example usage:
 ```
 docker run -d --restart=always \
