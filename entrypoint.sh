@@ -15,6 +15,12 @@ then
   mkdir /etc/netatalk
 fi
 
+if [ ! -d "/var/netatalk/CNID" ]
+then
+  mkdir /var/netatalk/CNID
+fi
+
+
 # write afp.conf if CUSTOM_AFP_CONF is not true
 if [ "${CUSTOM_AFP_CONF}" != "true" ]
 then
