@@ -3,19 +3,19 @@ services:
   timemachine:
     network_mode: "host"
     environment:
-      - CUSTOM_AFP_CONF="false"
-      - LOG_LEVEL="info"
-      - MIMIC_MODEL="TimeCapsule6,106"
-      - PASSWORD="timemachine"
-      - SET_PERMISSIONS="false"
-      - SHARE_NAME="TimeMachine"
-      - VOLUME_SIZE_LIMIT="0"
+      - CUSTOM_AFP_CONF=false
+      - LOG_LEVEL=info
+      - MIMIC_MODEL=TimeCapsule6,106
+      - PASSWORD=timemachine
+      - SET_PERMISSIONS=false
+      - SHARE_NAME=TimeMachine
+      - VOLUME_SIZE_LIMIT=0
     restart: unless-stopped
     ports:
      - "548:548"
      - "636:636"
     volumes:
-     - /mnt/backups/timemachine:/timemachine
+     - /path/to/your/timemachine/volume:/timemachine
      - ./timemachine-netatalk:/var/netatalk
      - ./timemachine-logs:/var/log/supervisor
     ulimits:
