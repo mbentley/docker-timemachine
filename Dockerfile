@@ -1,7 +1,7 @@
 FROM debian:jessie
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
 
-ENV NETATALK_VERSION 3.1.11
+ENV NETATALK_VERSION 3.1.12
 
 RUN apt-get update &&\
   apt-get install -y avahi-daemon supervisor &&\
