@@ -4,10 +4,51 @@
 MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule6,106}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
-PASSWORD="${PASSWORD:-timemachine}"
 SET_PERMISSIONS="${SET_PERMISSIONS:-false}"
 SHARE_NAME="${SHARE_NAME:-TimeMachine}"
 CUSTOM_AFP_CONF="${CUSTOM_AFP_CONF:-false}"
+TM_USERNAME="${TM_USERNAME:-timemachine}"
+PASSWORD="${PASSWORD:-timemachine}"
+TM_GROUPNAME="${TM_GROUPNAME:-timemachine}"
+TM_UID="${TM_UID:-1000}"
+TM_GID="${TM_GID:-${TM_UID}}"
+
+# check to see if group exists; if not, create it
+if grep -q -E "^${TM_GROUPNAME}:" /etc/group > /dev/null 2>&1
+then
+  echo "INFO: Group exists; skipping creation"
+else
+  echo "INFO: Group doesn't exist; creating..."
+  # create the group
+  groupadd -g "${TM_GID}" "${TM_GROUPNAME}"
+fi
+
+# check to see if user exists; if not, create it
+if id -u "${TM_USERNAME}" > /dev/null 2>&1
+then
+  echo "INFO: User exists; skipping creation"
+else
+  echo "INFO: User doesn't exist; creating..."
+  # create the user
+  useradd -u "${TM_UID}" -g "${TM_GROUPNAME}" -d "/opt/${TM_USERNAME}" -s /bin/false "${TM_USERNAME}"
+
+  # check to see what the password should be set to
+  if [ "${PASSWORD}" = "timemachine" ]
+  then
+      echo "Using default password: timemachine"
+  else
+      echo "Setting password from environment variable"
+  fi
+
+  # set the password
+  echo "${TM_USERNAME}":"${PASSWORD}" | chpasswd
+fi
+
+# create user directory if needed
+if [ ! -d "/opt/${TM_USERNAME}" ]
+then
+  mkdir "/opt/${TM_USERNAME}"
+fi
 
 # mkdir if needed
 if [ ! -d "/etc/netatalk" ]
@@ -32,8 +73,8 @@ then
     zeroconf = yes
 
   [${SHARE_NAME}]
-    path = /opt/timemachine
-    valid users = timemachine
+    path = /opt/${TM_USERNAME}
+    valid users = ${TM_USERNAME}
     time machine = yes
     # the max size of the data folder (in MiB)
     vol size limit = ${VOLUME_SIZE_LIMIT}" > /etc/netatalk/afp.conf
@@ -50,22 +91,14 @@ else
   fi
 fi
 
-# set password if defined
-if [ "${PASSWORD}" = "timemachine" ]
-then
-    echo "Using default password: timemachine"
-else
-    echo "Setting password from environment variable"
-    echo timemachine:"${PASSWORD}" | chpasswd
-fi
-
 # set ownership and permissions, if requested
 if [ "${SET_PERMISSIONS}" = "true" ]
 then
-  # set the ownership of /opt/timemachine
-  chown -v timemachine:timemachine /opt/timemachine
-  # change the permissions of /opt/timemachine
-  chmod -v 770 /opt/timemachine
+  # set the ownership of the directory time machine will use
+  chown -v "${TM_USERNAME}":"${TM_GROUPNAME}" "/opt/${TM_USERNAME}"
+
+  # change the permissions of the directory time machine will use
+  chmod -v 770 "/opt/${TM_USERNAME}"
 else
   echo "SET_PERMISSIONS=false; not setting ownership and permissions"
 fi

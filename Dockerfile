@@ -29,12 +29,6 @@ RUN apt-get update &&\
   mkdir /var/run/dbus &&\
   rm -rf /tmp/*
 
-RUN mkdir /opt/timemachine &&\
-  useradd -M -s /bin/false timemachine &&\
-  echo timemachine:timemachine | chpasswd &&\
-  chown timemachine:timemachine /opt/timemachine &&\
-  chmod 770 /opt/timemachine
-
 COPY supervisord.conf /etc/supervisord.conf
 COPY entrypoint.sh healthcheck.sh /
 
