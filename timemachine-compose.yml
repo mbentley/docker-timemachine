@@ -19,7 +19,7 @@ services:
      - "548:548"
      - "636:636"
     volumes:
-     - /path/to/your/timemachine/volume:/timemachine
+     - /path/to/your/timemachine/volume:/opt/timemachine
      - ./timemachine-netatalk:/var/netatalk
      - ./timemachine-logs:/var/log/supervisor
     ulimits:
