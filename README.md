@@ -18,6 +18,7 @@ docker run -d --restart=always \
   --net=host \
   --name timemachine \
   -e CUSTOM_AFP_CONF="false" \
+  -e CUSTOM_USER="false" \
   -e LOG_LEVEL="info" \
   -e MIMIC_MODEL="TimeCapsule6,106" \
   -e TM_USERNAME="timemachine" \
@@ -46,6 +47,7 @@ Default credentials:
 
 Optional variables:
   * `CUSTOM_AFP_CONF` - (default - `false`) indicates that you are going to bind mount a custom config to `/etc/netatalk/afp.conf` if set to `true`
+  * `CUSTOM_USER` - (default - `false`) indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true`
   * `LOG_LEVEL` - (default - `info`) sets the netatalk log level
   * `MIMIC_MODEL` - (default `TimeCapsule6,106`) sets the value of time machine to mimic
   * `TM_USERNAME` - (default `timemachine`) sets the username time machine runs as
