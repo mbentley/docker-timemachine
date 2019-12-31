@@ -1,18 +1,113 @@
-mbentley/timemachine
-====================
+# mbentley/timemachine
 
-docker image to run netatalk (compatible Time Machine for OS X)
-based off of debian:jessie
+docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine for MacOS
+
+## Tags
+
+`latest`, `afp` - AFP image based off of debian:jessie
+`smb` - SMB image based off of alpine:latest
+
+_Warning_: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple.
 
 To pull this image:
 `docker pull mbentley/timemachine`
 
-Example docker-compose usage:
+## Example usage for SMB
+
+Example usage with `--net=host` to allow Avahi discovery to function:
+
+```
+docker run -d --restart=always \
+  --name timemachine \
+  --net=host \
+  -e CUSTOM_SMB_CONF="false" \
+  -e CUSTOM_USER="false" \
+  -e MIMIC_MODEL="TimeCapsule8,119" \
+  -e TM_USERNAME="timemachine" \
+  -e TM_GROUPNAME="timemachine" \
+  -e TM_UID="1000" \
+  -e TM_GID="1000" \
+  -e PASSWORD="timemachine" \
+  -e SET_PERMISSIONS="false" \
+  -e SHARE_NAME="TimeMachine" \
+  -e WORKGROUP="WORKGROUP" \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v timemachine-var-log:/var/log \
+  -v timemachine-var-lib-samba:/var/lib/samba \
+  -v timemachine-var-cache-samba:/var/cache/samba \
+  -v timemachine-run-samba:/run/samba \
+  mbentley/timemachine:smb
+```
+
+Example usage with exposing ports _without_ Avahi discovery:
+
+```
+docker run -d --restart=always \
+  --name timemachine \
+  -p 137:137/udp \
+  -p 138:138/udp \
+  -p 139:139 \
+  -p 445:445 \
+  -e CUSTOM_SMB_CONF="false" \
+  -e CUSTOM_USER="false" \
+  -e MIMIC_MODEL="TimeCapsule8,119" \
+  -e TM_USERNAME="timemachine" \
+  -e TM_GROUPNAME="timemachine" \
+  -e TM_UID="1000" \
+  -e TM_GID="1000" \
+  -e PASSWORD="timemachine" \
+  -e SET_PERMISSIONS="false" \
+  -e SHARE_NAME="TimeMachine" \
+  -e WORKGROUP="WORKGROUP" \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v timemachine-var-log:/var/log \
+  -v timemachine-var-lib-samba:/var/lib/samba \
+  -v timemachine-var-cache-samba:/var/cache/samba \
+  -v timemachine-run-samba:/run/samba \
+  mbentley/timemachine:smb
+```
+
+This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).
+
+If you're using an external volume like in the example above, you will need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
+
+Also note that if you change the `TM_USERNAME` value that it will change the data path from `/opt/timemachine` to `/opt/<value-of-TM_USERNAME>`.
+
+Default credentials:
+
+* Username: `timemachine`
+* Password: `timemachine`
+
+Optional variables for SMB:
+
+| Variable | Default | Description |
+| :------- | :------ | :---------- |
+| `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
+| `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
+| `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
+| `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
+| `TM_GROUPNAME` | `timemachine` | sets the group name time machine runs as |
+| `TM_UID` | `1000` | sets the UID of the `TM_USERNAME` user |
+| `TM_GID` | `1000` | sets the GID of the `TM_GROUPNAME` group |
+| `PASSWORD` | `timemachine` | sets the password for the `timemachine` user |
+| `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine` |
+| `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
+| `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
+
+## AFP Examples and Variables
+
+<details><summary>Click to expand</summary>
+
+## Example docker-compose usage for AFP
+
 ```
 docker-compose -f timemachine-compose.yml up -d
 ```
 
-Example usage:
+## Example `docker run` usage for AFP
+
+Example usage with `--net=host` to allow Avahi discovery to function:
+
 ```
 docker run -d --restart=always \
   --net=host \
@@ -32,31 +127,53 @@ docker run -d --restart=always \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-netatalk:/var/netatalk \
   -v timemachine-logs:/var/log/supervisor \
-  mbentley/timemachine:latest
+  mbentley/timemachine:afp
 ```
 
-This works best with `--net=host` so that discovery can be broadcast.  Otherwise, just expose port 548 (`-p 548:548`) and 636 (`-p 636:636`) and then you must manually map the drive for it to show up.
+Example usage with exposing ports _without_ Avahi discovery:
 
-If you're using an external volume like in the example above, you will need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
+```
+docker run -d --restart=always \
+  --name timemachine \
+  -p 548:548 \
+  -p 636:636 \
+  -e CUSTOM_AFP_CONF="false" \
+  -e CUSTOM_USER="false" \
+  -e LOG_LEVEL="info" \
+  -e MIMIC_MODEL="TimeCapsule6,106" \
+  -e TM_USERNAME="timemachine" \
+  -e TM_GROUPNAME="timemachine" \
+  -e TM_UID="1000" \
+  -e TM_GID="1000" \
+  -e PASSWORD="timemachine" \
+  -e SET_PERMISSIONS="false" \
+  -e SHARE_NAME="TimeMachine" \
+  -e VOLUME_SIZE_LIMIT="0" \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v timemachine-netatalk:/var/netatalk \
+  -v timemachine-logs:/var/log/supervisor \
+  mbentley/timemachine:afp
+```
 
-Also note that if you change the `TM_USERNAME` value that it will change the data path from `/opt/timemachine` to `/opt/<value-of-TM_USERNAME>`.
+This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `afp://hostname-or-ip/TimeMachine` with your TimeMachine credentials).
 
-Default credentials:
-  * Username: `timemachine`
-  * Password: `timemachine`
+Optional variables for AFP:
 
-Optional variables:
-  * `CUSTOM_AFP_CONF` - (default - `false`) indicates that you are going to bind mount a custom config to `/etc/netatalk/afp.conf` if set to `true`
-  * `CUSTOM_USER` - (default - `false`) indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true`
-  * `LOG_LEVEL` - (default - `info`) sets the netatalk log level
-  * `MIMIC_MODEL` - (default `TimeCapsule6,106`) sets the value of time machine to mimic
-  * `TM_USERNAME` - (default `timemachine`) sets the username time machine runs as
-  * `TM_GROUPNAME` - (default `timemachine`) sets the group name time machine runs as
-  * `TM_UID` - (default: 1000) sets the UID of the `TM_USERNAME` user
-  * `TM_GID` - (default: 1000) sets the GID of the `TM_GROUPNAME` group
-  * `PASSWORD` - (default - `timemachine`) sets the password for the `timemachine` user
-  * `SET_PERMISSIONS` - (default `false`) set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine`
-  * `SHARE_NAME` - (default `TimeMachine`) sets the name of the timemachine share to TimeMachine by default
-  * `VOLUME_SIZE_LIMIT` - (default - `0`) sets the maximum size of the time machine backup in MiB ([mebibyte](https://en.wikipedia.org/wiki/Mebibyte))
+| Variable | Default | Description |
+| :------- | :------ | :---------- |
+| `CUSTOM_AFP_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/netatalk/afp.conf` if set to `true` |
+| `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
+| `LOG_LEVEL` | `info` | sets the netatalk log level |
+| `MIMIC_MODEL` | `TimeCapsule6,106` | sets the value of time machine to mimic |
+| `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
+| `TM_GROUPNAME` | `timemachine` | sets the group name time machine runs as |
+| `TM_UID` | `1000` | sets the UID of the `TM_USERNAME` user |
+| `TM_GID` | `1000` | sets the GID of the `TM_GROUPNAME` group |
+| `PASSWORD` | `timemachine` | sets the password for the `timemachine` user |
+| `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine` |
+| `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
+| `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup in MiB ([mebibyte](https://en.wikipedia.org/wiki/Mebibyte)) |
+
+</details>
 
 Thanks for [odarriba](https://github.com/odarriba) and [arve0](https://github.com/arve0) for their examples to start from.
