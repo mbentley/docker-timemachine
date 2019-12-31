@@ -30,6 +30,7 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-var-log:/var/log \
@@ -44,6 +45,7 @@ Example usage with exposing ports _without_ Avahi discovery:
 ```
 docker run -d --restart=always \
   --name timemachine \
+  --hostname timemachine \
   -p 137:137/udp \
   -p 138:138/udp \
   -p 139:139 \
@@ -58,6 +60,7 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-var-log:/var/log \
@@ -92,6 +95,7 @@ Optional variables for SMB:
 | `PASSWORD` | `timemachine` | sets the password for the `timemachine` user |
 | `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine` |
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
+| `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
 
 ## AFP Examples and Variables
@@ -135,6 +139,7 @@ Example usage with exposing ports _without_ Avahi discovery:
 ```
 docker run -d --restart=always \
   --name timemachine \
+  --hostname timemachine \
   -p 548:548 \
   -p 636:636 \
   -e CUSTOM_AFP_CONF="false" \

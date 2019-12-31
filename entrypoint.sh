@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # set default values
-VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 SET_PERMISSIONS="${SET_PERMISSIONS:-false}"
 SHARE_NAME="${SHARE_NAME:-TimeMachine}"
@@ -13,6 +12,7 @@ PASSWORD="${PASSWORD:-timemachine}"
 TM_GROUPNAME="${TM_GROUPNAME:-timemachine}"
 TM_UID="${TM_UID:-1000}"
 TM_GID="${TM_GID:-${TM_UID}}"
+VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 WORKGROUP="${WORKGROUP:-WORKGROUP}"
 
 # common functions
@@ -53,6 +53,23 @@ then
   # set default version for timecapsule w/SMB
   MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule8,119}"
 
+  # write smbd.service for Avahi to customize icon
+  echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">
+
+<service-group>
+  <name replace-wildcards=\"yes\">%h</name>
+  <service>
+    <type>_smb._tcp</type>
+    <port>445</port>
+  </service>
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+  <txt-record>model=${MIMIC_MODEL}</txt-record>
+  </service>
+</service-group>" > /etc/avahi/services/smbd.service
+
   # create custom user, group, and directories if CUSTOM_USER is not true
   if [ "${CUSTOM_USER}" != "true" ]
   then
@@ -85,38 +102,30 @@ then
     echo "INFO: CUSTOM_USER=true; skipping user, group, and data directory creation; using pre-existing values in /etc/passwd, /etc/group, and /etc/shadow"
   fi
 
-  # warn about ${VOLUME_SIZE_LIMIT} if set to non-zero
-  if [ "${VOLUME_SIZE_LIMIT}" != "0" ]
-  then
-    echo "WARNING: VOLUME_SIZE_LIMIT has been set to ${VOLUME_SIZE_LIMIT} but SMB doesn't support quotas; ignoring setting"
-  fi
-
   # write smb.conf if CUSTOM_SMB_CONF is not true
   if [ "${CUSTOM_SMB_CONF}" != "true" ]
   then
     echo "INFO: CUSTOM_SMB_CONF=false; generating /etc/samba/smb.conf..."
     echo "[global]
-      server role = standalone server
-      workgroup = ${WORKGROUP}
-      unix password sync = yes
-      idmap config * : backend = tbd
-      logging = file@2
-      log file = /var/log/samba/log.%m
-      security = user
-      load printers = no
-      fruit:model = ${MIMIC_MODEL}
+  server role = standalone server
+  workgroup = ${WORKGROUP}
+  unix password sync = yes
+  idmap config * : backend = tbd
+  logging = file@2
+  log file = /var/log/samba/log.%m
+  security = user
+  load printers = no
+  fruit:model = ${MIMIC_MODEL}
 
-      [${SHARE_NAME}]
-        fruit:aapl = yes
-	fruit:time machine = yes
-	path = /opt/${TM_USERNAME}
-	valid users = ${TM_USERNAME}
-	browseable = yes
-	writable = yes
-	kernel oplocks = no
-	kernel share modes = no
-	posix locking = no
-	vfs objects = catia fruit streams_xattr" > /etc/samba/smb.conf
+[${SHARE_NAME}]
+  fruit:aapl = yes
+  fruit:time machine = yes
+  fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
+  path = /opt/${TM_USERNAME}
+  valid users = ${TM_USERNAME}
+  browseable = yes
+  writable = yes
+  vfs objects = catia fruit streams_xattr" > /etc/samba/smb.conf
   else
     # CUSTOM_SMB_CONF was specified; make sure the file exists
     if [ -f "/etc/samba/smb.conf" ]

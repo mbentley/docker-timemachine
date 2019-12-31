@@ -10,7 +10,6 @@ RUN apk add --no-cache avahi avahi-compat-libdns_sd avahi-tools dbus samba-commo
   rm /etc/avahi/services/*.service
 
 # copy in necessary supporting config files
-COPY smbd.service /etc/avahi/services/smbd.service
 COPY supervisord.smb.conf /etc/supervisord.conf
 COPY entrypoint.sh /
 
