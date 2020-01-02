@@ -107,25 +107,25 @@ then
   then
     echo "INFO: CUSTOM_SMB_CONF=false; generating /etc/samba/smb.conf..."
     echo "[global]
-  server role = standalone server
-  workgroup = ${WORKGROUP}
-  unix password sync = yes
-  idmap config * : backend = tbd
-  logging = file@2
-  log file = /var/log/samba/log.%m
-  security = user
-  load printers = no
-  fruit:model = ${MIMIC_MODEL}
+   server role = standalone server
+   workgroup = ${WORKGROUP}
+   unix password sync = yes
+   log file = /var/log/samba/log.%m
+   logging = file
+   max log size = 1000
+   security = user
+   load printers = no
+   fruit:model = ${MIMIC_MODEL}
 
 [${SHARE_NAME}]
-  fruit:aapl = yes
-  fruit:time machine = yes
-  fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
-  path = /opt/${TM_USERNAME}
-  valid users = ${TM_USERNAME}
-  browseable = yes
-  writable = yes
-  vfs objects = catia fruit streams_xattr" > /etc/samba/smb.conf
+   fruit:aapl = yes
+   fruit:time machine = yes
+   fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
+   path = /opt/${TM_USERNAME}
+   valid users = ${TM_USERNAME}
+   browseable = yes
+   writable = yes
+   vfs objects = catia fruit streams_xattr" > /etc/samba/smb.conf
   else
     # CUSTOM_SMB_CONF was specified; make sure the file exists
     if [ -f "/etc/samba/smb.conf" ]
@@ -142,7 +142,7 @@ then
   samba_user_setup
 
   # cleanup PID files
-  for PIDFILE in nmbd smbd winbindd
+  for PIDFILE in nmbd smbd
   do
     if [ -f /run/samba/${PIDFILE}.pid ]
     then

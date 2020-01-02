@@ -2,7 +2,7 @@ FROM alpine:latest
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
 
 # install samba and supervisor; create supporting directories
-RUN apk add --no-cache avahi avahi-compat-libdns_sd avahi-tools dbus samba-common-tools samba-server samba-winbind supervisor &&\
+RUN apk add --no-cache avahi avahi-compat-libdns_sd avahi-tools dbus samba-common-tools samba-server supervisor &&\
   mkdir /var/log/supervisor &&\
   mkdir /opt/timemachine &&\
   touch /etc/samba/lmhosts &&\
