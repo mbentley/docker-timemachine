@@ -14,7 +14,7 @@ To pull this image:
 
 ## Example usage for SMB
 
-Example usage with `--net=host` to allow Avahi discovery to function:
+Example usage with `--net=host` to allow Avahi discovery; all available environment variables set to their default values:
 
 ```
 docker run -d --restart=always \
@@ -42,7 +42,7 @@ docker run -d --restart=always \
   mbentley/timemachine:smb
 ```
 
-Example usage with exposing ports _without_ Avahi discovery:
+Example usage with exposing ports _without_ Avahi discovery; all available environment variables set to their default values:
 
 ```
 docker run -d --restart=always \
