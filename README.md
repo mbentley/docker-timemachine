@@ -24,6 +24,7 @@ docker run -d --restart=always \
   -e CUSTOM_USER="false" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e EXTERNAL_CONF="" \
+  -e HIDE_SHARES="no" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
   -e TM_UID="1000" \
@@ -53,6 +54,7 @@ docker run -d --restart=always \
   -p 445:445 \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
+  -e HIDE_SHARES="no" \
   -e EXTERNAL_CONF="" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e TM_USERNAME="timemachine" \
@@ -90,6 +92,7 @@ Optional variables for SMB:
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
 | `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
+| `HIDE_SHARES` | `no` | set to `yes` if you would like only the share(s) a user can access to appear |
 | `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
 | `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
 | `TM_GROUPNAME` | `timemachine` | sets the group name time machine runs as |
@@ -133,6 +136,7 @@ docker run -d --restart=always \
   -e CUSTOM_USER="false" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e EXTERNAL_CONF="/users" \
+  -e HIDE_SHARES="no" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
   -e TM_UID="1000" \

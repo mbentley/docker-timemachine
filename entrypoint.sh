@@ -15,6 +15,7 @@ TM_GID="${TM_GID:-${TM_UID}}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 WORKGROUP="${WORKGROUP:-WORKGROUP}"
 EXTERNAL_CONF="${EXTERNAL_CONF:-}"
+HIDE_SHARES="${HIDE_SHARES:-no}"
 
 # common functions
 set_password() {
@@ -184,6 +185,8 @@ then
    max log size = 1000
    security = user
    load printers = no
+   access based share enum = ${HIDE_SHARES}
+   hide unreadable = ${HIDE_SHARES}
    fruit:model = ${MIMIC_MODEL}" > /etc/samba/smb.conf
   fi
 
