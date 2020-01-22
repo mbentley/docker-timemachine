@@ -14,6 +14,8 @@ TM_UID="${TM_UID:-1000}"
 TM_GID="${TM_GID:-${TM_UID}}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 WORKGROUP="${WORKGROUP:-WORKGROUP}"
+EXTERNAL_CONF="${EXTERNAL_CONF:-}"
+HIDE_SHARES="${HIDE_SHARES:-no}"
 
 # common functions
 set_password() {
@@ -26,13 +28,17 @@ set_password() {
   fi
 
   # set the password
+  printf "INFO: "
   echo "${TM_USERNAME}":"${PASSWORD}" | chpasswd
 }
 
 samba_user_setup() {
   # set up user in Samba
+  printf "INFO: Samba - Created "
   smbpasswd -L -a -n "${TM_USERNAME}"
+  printf "INFO: Samba - "
   smbpasswd -L -e -n "${TM_USERNAME}"
+  printf "INFO: Samba - setting password\n"
   printf "%s\n%s\n" "${PASSWORD}" "${PASSWORD}" | smbpasswd -L -s "${TM_USERNAME}"
 }
 
@@ -41,6 +47,102 @@ create_user_directory() {
   if [ ! -d "/opt/${TM_USERNAME}" ]
   then
     mkdir "/opt/${TM_USERNAME}"
+  fi
+}
+
+create_smb_user() {
+  # validate that none of the required environment variables are empty
+  if [ -z "${TM_USERNAME}" ] || [ -z "${TM_GROUPNAME}" ] || [ -z "${PASSWORD}" ] || [ -z "${SHARE_NAME}" ] || [ -z "${TM_UID}" ] || [ -z "${TM_GID}" ]
+  then
+    echo "ERROR: Missing one or more of the following variables; unable to create user"
+    echo "  Hint: Is the variable missing or not set in ${USER_FILE}?"
+    echo "  TM_USERNAME=${TM_USERNAME}"
+    echo "  TM_GROUPNAME=${TM_GROUPNAME}"
+    echo "  PASSWORD=$(if [ -n "${PASSWORD}" ]; then printf "<value reddacted but present>";fi)"
+    echo "  SHARE_NAME=${SHARE_NAME}"
+    echo "  TM_UID=${TM_UID}"
+    echo "  TM_GID=${TM_GID}"
+    exit 1
+  fi
+
+  # create custom user, group, and directories if CUSTOM_USER is not true
+  if [ "${CUSTOM_USER}" != "true" ]
+  then
+    # check to see if group exists; if not, create it
+    if grep -q -E "^${TM_GROUPNAME}:" /etc/group > /dev/null 2>&1
+    then
+      echo "INFO: Group ${TM_GROUPNAME} exists; skipping creation"
+    else
+      echo "INFO: Group ${TM_GROUPNAME} doesn't exist; creating..."
+      # create the group
+      addgroup -g "${TM_GID}" "${TM_GROUPNAME}"
+    fi
+
+    # check to see if user exists; if not, create it
+    if id -u "${TM_USERNAME}" > /dev/null 2>&1
+    then
+      echo "INFO: User ${TM_USERNAME} exists; skipping creation"
+    else
+      echo "INFO: User ${TM_USERNAME} doesn't exist; creating..."
+      # create the user
+      adduser -u "${TM_UID}" -G "${TM_GROUPNAME}" -h "/opt/${TM_USERNAME}" -s /bin/false -D "${TM_USERNAME}"
+
+      # set the user's password if necessary
+      set_password
+    fi
+
+    # create user directory if necessary
+    create_user_directory
+  else
+    echo "INFO: CUSTOM_USER=true; skipping user, group, and data directory creation; using pre-existing values in /etc/passwd, /etc/group, and /etc/shadow"
+  fi
+
+  # write smb.conf if CUSTOM_SMB_CONF is not true
+  if [ "${CUSTOM_SMB_CONF}" != "true" ]
+  then
+    echo "INFO: CUSTOM_SMB_CONF=false; generating [${SHARE_NAME}] section of /etc/samba/smb.conf..."
+    echo "
+[${SHARE_NAME}]
+   fruit:aapl = yes
+   fruit:time machine = yes
+   fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
+   path = /opt/${TM_USERNAME}
+   valid users = ${TM_USERNAME}
+   browseable = yes
+   writable = yes
+   vfs objects = catia fruit streams_xattr" >> /etc/samba/smb.conf
+  else
+    # CUSTOM_SMB_CONF was specified; make sure the file exists
+    if [ -f "/etc/samba/smb.conf" ]
+    then
+      echo "INFO: CUSTOM_SMB_CONF=true; skipping generating smb.conf and using provided /etc/samba/smb.conf"
+    else
+      # there is no /etc/samba/smbp.conf; exit
+      echo "ERROR: CUSTOM_SMB_CONF=true but you did not bind mount a config to /etc/samba/smb.conf; exiting."
+      exit 1
+    fi
+  fi
+
+  # set up user in Samba
+  samba_user_setup
+
+  # set user permissions
+  set_permissions
+}
+
+set_permissions() {
+  # set ownership and permissions, if requested
+  if [ "${SET_PERMISSIONS}" = "true" ]
+  then
+    # set the ownership of the directory time machine will use
+    printf "INFO: "
+    chown -v "${TM_USERNAME}":"${TM_GROUPNAME}" "/opt/${TM_USERNAME}"
+
+    # change the permissions of the directory time machine will use
+    printf "INFO: "
+    chmod -v 770 "/opt/${TM_USERNAME}"
+  else
+    echo "INFO: SET_PERMISSIONS=false; not setting ownership and permissions for /opt/${TM_USERNAME}"
   fi
 }
 
@@ -70,42 +172,10 @@ then
   </service>
 </service-group>" > /etc/avahi/services/smbd.service
 
-  # create custom user, group, and directories if CUSTOM_USER is not true
-  if [ "${CUSTOM_USER}" != "true" ]
-  then
-    # check to see if group exists; if not, create it
-    if grep -q -E "^${TM_GROUPNAME}:" /etc/group > /dev/null 2>&1
-    then
-      echo "INFO: Group exists; skipping creation"
-    else
-      echo "INFO: Group doesn't exist; creating..."
-      # create the group
-      addgroup -g "${TM_GID}" "${TM_GROUPNAME}"
-    fi
-
-    # check to see if user exists; if not, create it
-    if id -u "${TM_USERNAME}" > /dev/null 2>&1
-    then
-      echo "INFO: User exists; skipping creation"
-    else
-      echo "INFO: User doesn't exist; creating..."
-      # create the user
-      adduser -u "${TM_UID}" -G "${TM_GROUPNAME}" -h "/opt/${TM_USERNAME}" -s /bin/false -D "${TM_USERNAME}"
-
-      # set the user's password if necessary
-      set_password
-    fi
-
-    # create user directory if necessary
-    create_user_directory
-  else
-    echo "INFO: CUSTOM_USER=true; skipping user, group, and data directory creation; using pre-existing values in /etc/passwd, /etc/group, and /etc/shadow"
-  fi
-
-  # write smb.conf if CUSTOM_SMB_CONF is not true
+  # write global smb.conf if CUSTOM_SMB_CONF is not true
   if [ "${CUSTOM_SMB_CONF}" != "true" ]
   then
-    echo "INFO: CUSTOM_SMB_CONF=false; generating /etc/samba/smb.conf..."
+    echo "INFO: CUSTOM_SMB_CONF=false; generating [global] section of /etc/samba/smb.conf..."
     echo "[global]
    server role = standalone server
    workgroup = ${WORKGROUP}
@@ -115,31 +185,38 @@ then
    max log size = 1000
    security = user
    load printers = no
-   fruit:model = ${MIMIC_MODEL}
-
-[${SHARE_NAME}]
-   fruit:aapl = yes
-   fruit:time machine = yes
-   fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
-   path = /opt/${TM_USERNAME}
-   valid users = ${TM_USERNAME}
-   browseable = yes
-   writable = yes
-   vfs objects = catia fruit streams_xattr" > /etc/samba/smb.conf
-  else
-    # CUSTOM_SMB_CONF was specified; make sure the file exists
-    if [ -f "/etc/samba/smb.conf" ]
-    then
-      echo "INFO: CUSTOM_SMB_CONF=true; skipping generating smb.conf and using provided /etc/samba/smb.conf"
-    else
-      # there is no /etc/samba/smbp.conf; exit
-      echo "ERROR: CUSTOM_SMB_CONF=true but you did not bind mount a config to /etc/samba/smb.conf; exiting."
-      exit 1
-    fi
+   access based share enum = ${HIDE_SHARES}
+   hide unreadable = ${HIDE_SHARES}
+   fruit:model = ${MIMIC_MODEL}" > /etc/samba/smb.conf
   fi
 
-  # set up user in Samba
-  samba_user_setup
+  # check to see if we should create one or many users
+  if [ -z "${EXTERNAL_CONF}" ]
+  then
+    # EXTERNAL_CONF not set; assume we are creating one user; create user
+    create_smb_user
+  else
+    # EXTERNAL_CONF is set; assume we are creating multiple users
+    if [ ! -d "${EXTERNAL_CONF}" ]
+    then
+      echo "ERROR: The value of EXTERNAL_CONF should be a directory mounted inside the container; ${EXTERNAL_CONF} was not found"
+      exit 1
+    fi
+
+    # loop through each user file in the EXTERNAL_CONF directory to load the variables
+    for USER_FILE in "${EXTERNAL_CONF}"/*
+    do
+      echo "INFO: Loading values from ${USER_FILE}"
+      # source the variable file
+      . "${USER_FILE}"
+
+      # create the user with the specified values
+      create_smb_user
+
+      # make sure we clear any previously set variables after a loop
+      unset TM_USERNAME TM_GROUPNAME PASSWORD SHARE_NAME VOLUME_SIZE_LIMIT TM_UID TM_GID
+    done
+  fi
 
   # cleanup PID files
   for PIDFILE in nmbd smbd
@@ -242,6 +319,9 @@ else
     fi
   fi
 
+  # set user permissions
+  set_permissions
+
   # cleanup dbus PID file
   if [ -f /var/run/dbus/pid ]
   then
@@ -262,19 +342,6 @@ else
     echo "INFO: avahi-daemon PID exists; removing..."
     rm -v /var/run/avahi-daemon/pid
   fi
-fi
-
-# common tasks
-# set ownership and permissions, if requested
-if [ "${SET_PERMISSIONS}" = "true" ]
-then
-  # set the ownership of the directory time machine will use
-  chown -v "${TM_USERNAME}":"${TM_GROUPNAME}" "/opt/${TM_USERNAME}"
-
-  # change the permissions of the directory time machine will use
-  chmod -v 770 "/opt/${TM_USERNAME}"
-else
-  echo "INFO: SET_PERMISSIONS=false; not setting ownership and permissions"
 fi
 
 # run CMD

@@ -7,7 +7,7 @@ docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine
 * `latest`, `afp` - AFP image based off of debian:jessie
 * `smb` - SMB image based off of alpine:latest
 
-_Warning_: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple.
+_Warning_: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple.  I do not plan on adding any new features to the AFP based config.
 
 To pull this image:
 `docker pull mbentley/timemachine`
@@ -23,6 +23,8 @@ docker run -d --restart=always \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
+  -e EXTERNAL_CONF="" \
+  -e HIDE_SHARES="no" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
   -e TM_UID="1000" \
@@ -52,6 +54,8 @@ docker run -d --restart=always \
   -p 445:445 \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
+  -e HIDE_SHARES="no" \
+  -e EXTERNAL_CONF="" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
@@ -87,6 +91,8 @@ Optional variables for SMB:
 | :------- | :------ | :---------- |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
+| `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
+| `HIDE_SHARES` | `no` | set to `yes` if you would like only the share(s) a user can access to appear |
 | `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
 | `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
 | `TM_GROUPNAME` | `timemachine` | sets the group name time machine runs as |
@@ -97,6 +103,57 @@ Optional variables for SMB:
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
+
+### Adding Multiple Users & Shares
+
+In order to add multiple users who have their own shares, you will need to create a file for each user and put them in a directory _with no other contents_.  The file name does not matter but the contents must be environment variable formatted proper and include all of the values below in the example.  Only `VOLUME_SIZE_LIMIT` can be empty if you do not want to set a quota.
+
+#### Example `EXTERNAL_CONF` File
+
+This is an example to create a user named `foo`.  Create multiple files with different attributes to create multiple users and shares.  There must be no other files in the directory specified or this will not work.
+
+`foo.conf`
+
+```
+TM_USERNAME=foo
+TM_GROUPNAME=foogroup
+PASSWORD=foopass
+SHARE_NAME=foo
+VOLUME_SIZE_LIMIT="1 T"
+TM_UID=1000
+TM_GID=1000
+```
+
+#### Example run command
+
+This run command has the necessary path to where the external user files will be mounted (set in `EXTERNAL_CONF`) and the volume mount that matches the path specified in `EXTERNAL_CONF`.
+
+```
+docker run -d --restart=always \
+  --name timemachine \
+  --net=host \
+  -e CUSTOM_SMB_CONF="false" \
+  -e CUSTOM_USER="false" \
+  -e MIMIC_MODEL="TimeCapsule8,119" \
+  -e EXTERNAL_CONF="/users" \
+  -e HIDE_SHARES="no" \
+  -e TM_USERNAME="timemachine" \
+  -e TM_GROUPNAME="timemachine" \
+  -e TM_UID="1000" \
+  -e TM_GID="1000" \
+  -e PASSWORD="timemachine" \
+  -e SET_PERMISSIONS="false" \
+  -e SHARE_NAME="TimeMachine" \
+  -e VOLUME_SIZE_LIMIT="0" \
+  -e WORKGROUP="WORKGROUP" \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v timemachine-var-log:/var/log \
+  -v timemachine-var-lib-samba:/var/lib/samba \
+  -v timemachine-var-cache-samba:/var/cache/samba \
+  -v timemachine-run-samba:/run/samba \
+  -v /path/on/host/to/user/file/directory:/users \
+  mbentley/timemachine:smb
+```
 
 ## AFP Examples and Variables
 
