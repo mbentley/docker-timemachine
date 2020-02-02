@@ -345,4 +345,5 @@ else
 fi
 
 # run CMD
+echo "INFO: entrypoint complete; executing '${*}'"
 exec "${@}"

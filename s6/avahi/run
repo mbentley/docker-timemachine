@@ -1,0 +1,9 @@
+#!/bin/sh
+
+while [ ! -S "/var/run/dbus/system_bus_socket" ]
+do
+  echo "dbus socket not yet available; sleeping..."
+  sleep .5
+done
+
+exec avahi-daemon --no-chroot

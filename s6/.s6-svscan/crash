@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "Executing .s6-svscan/crash with arguments ${*}"
