@@ -20,8 +20,8 @@ services:
      - "636:636"
     volumes:
      - /path/to/your/timemachine/volume:/opt/timemachine
-     - ./timemachine-netatalk:/var/netatalk
-     - ./timemachine-logs:/var/log/supervisor
+     - timemachine-netatalk:/var/netatalk
+     - timemachine-logs:/var/log/supervisor
     ulimits:
       nofile:
         soft: 65536
