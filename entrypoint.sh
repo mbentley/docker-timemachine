@@ -54,13 +54,12 @@ createdir() {
   # create directory if needed
   if [ ! -d "${1}" ]; then
     echo "Creating ${1}"
-    mkdir -p ${1}
+    mkdir -p "${1}"
   fi
-  if [ ! -z "${2}" ]; then   
-    chmod ${2} ${1}
-  fi 
+  if [ -n "${2}" ]; then
+    chmod "${2}" "${1}"
+  fi
 }
-
 
 create_smb_user() {
   # validate that none of the required environment variables are empty
@@ -224,6 +223,7 @@ then
     do
       echo "INFO: Loading values from ${USER_FILE}"
       # source the variable file
+      # shellcheck disable=SC1090
       . "${USER_FILE}"
 
       # create the user with the specified values
