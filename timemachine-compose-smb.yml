@@ -20,14 +20,15 @@ services:
       - WORKGROUP=WORKGROUP
     restart: unless-stopped
     ports:
-     - "548:548"
-     - "636:636"
+     - "137:137/udp"
+     - "138:138/udp"
+     - "139:139"
     volumes:
      - /path/to/your/timemachine/volume:/opt/timemachine
-     - ./timemachine-var-log:/var/log
-     - ./timemachine-var-lib-samba:/var/lib/samba
-     - ./timemachine-var-cache-samba:/var/cache/samba
-     - ./timemachine-run-samba:/run/samba
+     - timemachine-var-log:/var/log
+     - timemachine-var-lib-samba:/var/lib/samba
+     - timemachine-var-cache-samba:/var/cache/samba
+     - timemachine-run-samba:/run/samba
 
     ulimits:
       nofile:
@@ -35,4 +36,3 @@ services:
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:smb
-
