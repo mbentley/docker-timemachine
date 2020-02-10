@@ -1,4 +1,5 @@
-# mbentley/timemachine
+# grizmin/timemachine
+## This is a fork of mbentley/timemachine
 
 docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine for MacOS
 
@@ -11,6 +12,14 @@ _Warning_: I would strongly suggest migrating to the SMB image as AFP is being d
 
 To pull this image:
 `docker pull grizmin/timemachine`
+
+## Example docker-compose usage for SMB
+
+Make sure to edit timemachine-compose-smb.yml.
+
+```
+docker-compose -f timemachine-compose-smb.yml up -d
+```
 
 ## Example usage for SMB
 
@@ -34,12 +43,12 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
-  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt \
   -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
-  mbentley/timemachine:smb
+  grizmin/timemachine:smb
 ```
 
 Example usage with exposing ports _without_ Avahi discovery; all available environment variables set to their default values:
@@ -66,12 +75,12 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
-  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt \
   -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
-  mbentley/timemachine:smb
+  grizmin/timemachine:smb
 ```
 
 This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).
@@ -146,13 +155,13 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
-  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt \
   -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
   -v /path/on/host/to/user/file/directory:/users \
-  mbentley/timemachine:smb
+  grizmin/timemachine:smb
 ```
 
 ## AFP Examples and Variables
@@ -162,7 +171,7 @@ docker run -d --restart=always \
 ## Example docker-compose usage for AFP
 
 ```
-docker-compose -f timemachine-compose.yml up -d
+docker-compose -f timemachine-compose-afp.yml up -d
 ```
 
 ## Example `docker run` usage for AFP
@@ -185,10 +194,10 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
   -e VOLUME_SIZE_LIMIT="0" \
-  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt \
   -v timemachine-netatalk:/var/netatalk \
   -v timemachine-logs:/var/log/supervisor \
-  mbentley/timemachine:afp
+  grizmin/timemachine:afp
 ```
 
 Example usage with exposing ports _without_ Avahi discovery:
@@ -214,7 +223,7 @@ docker run -d --restart=always \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-netatalk:/var/netatalk \
   -v timemachine-logs:/var/log/supervisor \
-  mbentley/timemachine:afp
+  grizmin/timemachine:afp
 ```
 
 This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `afp://hostname-or-ip/TimeMachine` with your TimeMachine credentials).

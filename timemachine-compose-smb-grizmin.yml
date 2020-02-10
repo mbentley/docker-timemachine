@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  timemachine:
+    network_mode: "host"
+    environment:
+      - CUSTOM_SMB_CONF=false
+      - CUSTOM_USER=false
+      - LOG_LEVEL=info
+      - EXTERNAL_CONF=./users
+      - HIDE_SHARES=no
+      - MIMIC_MODEL=TimeCapsule8,119
+      - TM_USER=timemachine
+      - TM_GROUPNAME=timemachine
+      - TM_UID=1000
+      - TM_GID=1000
+      - PASSWORD=timemachine
+      - SET_PERMISSIONS=false
+      - SHARE_NAME=TimeMachine
+      - VOLUME_SIZE_LIMIT=0
+      - WORKGROUP=WORKGROUP
+    restart: unless-stopped
+    ports:
+     - "548:548"
+     - "636:636"
+    volumes:
+     - /mnt/backups/timemachine:/opt
+     - ./timemachine-var-log:/var/log
+     - ./timemachine-var-lib-samba:/var/lib/samba
+     - ./timemachine-var-cache-samba:/var/cache/samba
+     - ./timemachine-run-samba:/run/samba
+     - ./users:/users
+
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    container_name: timemachine
+    image: grizmin/timemachine:smb
+
