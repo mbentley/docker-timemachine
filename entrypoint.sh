@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # set default values
 LOG_LEVEL="${LOG_LEVEL:-info}"
@@ -50,13 +50,17 @@ create_user_directory() {
   fi
 }
 
-createdirs() {
+createdir() {
   # create directory if needed
   if [ ! -d "${1}" ]; then
     echo "Creating ${1}"
-    mkdir -p "${1}"
+    mkdir -p ${1}
   fi
+  if [ ! -z "${2}" ]; then   
+    chmod ${2} ${1}
+  fi 
 }
+
 
 create_smb_user() {
   # validate that none of the required environment variables are empty
@@ -199,14 +203,8 @@ then
   fi
 
   # mkdir if needed
-  my_dirs=(
-    /var/lib/samba/private
-    /var/log/samba/cores
-  )
-
-  for dir in ${my_dirs[@]}; do 
-    createdirs ${dir}
-  done
+  createdir /var/lib/samba/private 700
+  createdir /var/log/samba/cores 700
 
   # check to see if we should create one or many users
   if [ -z "${EXTERNAL_CONF}" ]
@@ -298,14 +296,8 @@ else
   fi
 
   # mkdir if needed
-  my_dirs=(
-    /etc/netatalk
-    /var/netatalk/CNID
-  )
-
-  for dir in ${my_dirs[@]}; do
-    createdirs ${dir}
-  done
+  createdir /etc/netatalk
+  createdir /var/netatalk/CNID
 
   # write afp.conf if CUSTOM_AFP_CONF is not true
   if [ "${CUSTOM_AFP_CONF}" != "true" ]
