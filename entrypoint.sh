@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set default values
 LOG_LEVEL="${LOG_LEVEL:-info}"
@@ -47,6 +47,14 @@ create_user_directory() {
   if [ ! -d "/opt/${TM_USERNAME}" ]
   then
     mkdir "/opt/${TM_USERNAME}"
+  fi
+}
+
+createdirs() {
+  # create directory if needed
+  if [ ! -d "${1}" ]; then
+    echo "Creating ${1}"
+    mkdir -p "${1}"
   fi
 }
 
@@ -190,6 +198,16 @@ then
    fruit:model = ${MIMIC_MODEL}" > /etc/samba/smb.conf
   fi
 
+  # mkdir if needed
+  my_dirs=(
+    /var/lib/samba/private
+    /var/log/samba/cores
+  )
+
+  for dir in ${my_dirs[@]}; do 
+    createdirs ${dir}
+  done
+
   # check to see if we should create one or many users
   if [ -z "${EXTERNAL_CONF}" ]
   then
@@ -280,16 +298,14 @@ else
   fi
 
   # mkdir if needed
-  if [ ! -d "/etc/netatalk" ]
-  then
-    mkdir /etc/netatalk
-  fi
+  my_dirs=(
+    /etc/netatalk
+    /var/netatalk/CNID
+  )
 
-  # mkdir if needed
-  if [ ! -d "/var/netatalk/CNID" ]
-  then
-    mkdir /var/netatalk/CNID
-  fi
+  for dir in ${my_dirs[@]}; do
+    createdirs ${dir}
+  done
 
   # write afp.conf if CUSTOM_AFP_CONF is not true
   if [ "${CUSTOM_AFP_CONF}" != "true" ]
