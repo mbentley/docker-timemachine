@@ -23,7 +23,7 @@ services:
      - "548:548"
      - "636:636"
     volumes:
-     - /path/to/your/timemachine/volume:/opt/timemachine
+     - /mnt/backups/timemachine:/opt/timemachine
      - ./timemachine-var-log:/var/log
      - ./timemachine-var-lib-samba:/var/lib/samba
      - ./timemachine-var-cache-samba:/var/cache/samba
@@ -34,5 +34,5 @@ services:
         soft: 65536
         hard: 65536
     container_name: timemachine
-    image: mbentley/timemachine:smb
+    image: grizmin/timemachine:smb
 
