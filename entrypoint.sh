@@ -50,6 +50,18 @@ create_user_directory() {
   fi
 }
 
+createdir() {
+  # create directory if needed
+  if [ ! -d "${1}" ]; then
+    echo "Creating ${1}"
+    mkdir -p ${1}
+  fi
+  if [ ! -z "${2}" ]; then   
+    chmod ${2} ${1}
+  fi 
+}
+
+
 create_smb_user() {
   # validate that none of the required environment variables are empty
   if [ -z "${TM_USERNAME}" ] || [ -z "${TM_GROUPNAME}" ] || [ -z "${PASSWORD}" ] || [ -z "${SHARE_NAME}" ] || [ -z "${TM_UID}" ] || [ -z "${TM_GID}" ]
@@ -190,6 +202,10 @@ then
    fruit:model = ${MIMIC_MODEL}" > /etc/samba/smb.conf
   fi
 
+  # mkdir if needed
+  createdir /var/lib/samba/private 700
+  createdir /var/log/samba/cores 700
+
   # check to see if we should create one or many users
   if [ -z "${EXTERNAL_CONF}" ]
   then
@@ -280,16 +296,8 @@ else
   fi
 
   # mkdir if needed
-  if [ ! -d "/etc/netatalk" ]
-  then
-    mkdir /etc/netatalk
-  fi
-
-  # mkdir if needed
-  if [ ! -d "/var/netatalk/CNID" ]
-  then
-    mkdir /var/netatalk/CNID
-  fi
+  createdir /etc/netatalk
+  createdir /var/netatalk/CNID
 
   # write afp.conf if CUSTOM_AFP_CONF is not true
   if [ "${CUSTOM_AFP_CONF}" != "true" ]
