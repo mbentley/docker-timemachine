@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# do nothing
+echo "Executing .s6-svscan/finish with arguments ${*}"

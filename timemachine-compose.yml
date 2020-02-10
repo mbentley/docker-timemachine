@@ -6,6 +6,10 @@ services:
       - CUSTOM_AFP_CONF=false
       - LOG_LEVEL=info
       - MIMIC_MODEL=TimeCapsule6,106
+      - TM_USERNAME=timemachine
+      - TM_GROUPNAME=timemachine
+      - TM_UID=1000
+      - TM_GID=1000
       - PASSWORD=timemachine
       - SET_PERMISSIONS=false
       - SHARE_NAME=TimeMachine
@@ -15,7 +19,7 @@ services:
      - "548:548"
      - "636:636"
     volumes:
-     - /path/to/your/timemachine/volume:/timemachine
+     - /path/to/your/timemachine/volume:/opt/timemachine
      - ./timemachine-netatalk:/var/netatalk
      - ./timemachine-logs:/var/log/supervisor
     ulimits:
