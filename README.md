@@ -22,6 +22,7 @@ docker run -d --restart=always \
   --net=host \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
+  -e DEBUG_LEVEL="1" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e EXTERNAL_CONF="" \
   -e HIDE_SHARES="no" \
@@ -54,6 +55,7 @@ docker run -d --restart=always \
   -p 445:445 \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
+  -e DEBUG_LEVEL="1" \
   -e HIDE_SHARES="no" \
   -e EXTERNAL_CONF="" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
@@ -91,6 +93,7 @@ Optional variables for SMB:
 | :------- | :------ | :---------- |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
+| `DEBUG_LEVEL` | `1` | sets the debug level for `nmbd` and `smbd` |
 | `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
 | `HIDE_SHARES` | `no` | set to `yes` if you would like only the share(s) a user can access to appear |
 | `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
@@ -134,6 +137,7 @@ docker run -d --restart=always \
   --net=host \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
+  -e DEBUG_LEVEL="1" \
   -e MIMIC_MODEL="TimeCapsule8,119" \
   -e EXTERNAL_CONF="/users" \
   -e HIDE_SHARES="no" \

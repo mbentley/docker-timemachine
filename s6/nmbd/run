@@ -1,3 +1,5 @@
 #!/bin/sh
 
-exec /usr/sbin/nmbd --foreground --no-process-group --log-stdout --debuglevel=1
+DEBUG_LEVEL="${DEBUG_LEVEL:-1}"
+
+exec /usr/sbin/nmbd --foreground --no-process-group --log-stdout --debuglevel="${DEBUG_LEVEL}"
