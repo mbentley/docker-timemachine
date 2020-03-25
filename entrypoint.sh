@@ -21,11 +21,7 @@ set_password() {
   # check PASSWORD and PASSWORD_FILE are both not set
   if [ ! -z "${PASSWORD}" ]
   then
-    if [ ! -z "${PASSWORD_FILE}" ]
-    then
-      echo "ERROR: PASSSWORD and PASSWORD_FILE can not both be set. Please choose 1"
-      exit 1
-    fi
+    echo "ERROR: PASSWORD and PASSWORD_FILE can not both be set. Please choose 1"
   fi
 
   PASSWORD="${PASSWORD:-timemachine}"
