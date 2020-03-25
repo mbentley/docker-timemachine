@@ -28,3 +28,9 @@ services:
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:latest
+    secrets:
+      - password
+
+secrets:
+  password:
+    file: ./password.txt
