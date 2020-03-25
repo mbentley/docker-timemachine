@@ -1,4 +1,4 @@
-version: '3'
+version: "3.3"
 services:
   timemachine:
     network_mode: "host"
@@ -10,7 +10,9 @@ services:
       - TM_GROUPNAME=timemachine
       - TM_UID=1000
       - TM_GID=1000
-      - PASSWORD=timemachine
+      - PASSWORD_FILE=/run/secrets/password
+      # or
+      # - PASSWORD=timemachine
       - SET_PERMISSIONS=false
       - SHARE_NAME=TimeMachine
       - VOLUME_SIZE_LIMIT=0
@@ -28,3 +30,9 @@ services:
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:latest
+    secrets:
+      - password
+
+secrets:
+  password:
+    file: ./password.txt
