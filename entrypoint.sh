@@ -19,9 +19,10 @@ HIDE_SHARES="${HIDE_SHARES:-no}"
 # common functions
 set_password() {
   # check PASSWORD and PASSWORD_FILE are both not set
-  if [ ! -z "${PASSWORD}" ]
+  if [ ! -z "${PASSWORD}" ] && [ ! -z "${PASSWORD_FILE}" ]
   then
     echo "ERROR: PASSWORD and PASSWORD_FILE can not both be set. Please choose 1"
+    exit 1
   fi
 
   PASSWORD="${PASSWORD:-timemachine}"
