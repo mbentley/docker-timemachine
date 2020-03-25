@@ -29,7 +29,7 @@ set_password() {
 
   if [ -n "${PASSWORD_FILE}" ]
   then
-    PASSWORD="$(cat $PASSWORD_FILE)"
+    PASSWORD=$(cat "${PASSWORD_FILE}")
   fi
 
   # check to see what the password should be set to
