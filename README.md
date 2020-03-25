@@ -159,6 +159,36 @@ docker run -d --restart=always \
   mbentley/timemachine:smb
 ```
 
+#### Using a password file
+
+This is an example to using Docker secrets to pass the password via a file
+
+`password.txt`
+
+```
+my_secret_password
+```
+
+#### Example docker-compose file
+
+The follow example shows the key values required for in your compose file.
+
+```
+version: "3.3" # or greater
+services:
+  timemachine:
+    # ...
+    environment:
+      - PASSWORD_FILE=/run/secrets/password
+      # ...
+    secrets:
+      - password
+
+secrets:
+  password:
+    file: ./password.txt
+```
+
 ## AFP Examples and Variables
 
 <details><summary>Click to expand</summary>
