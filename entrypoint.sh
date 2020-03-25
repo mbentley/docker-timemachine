@@ -8,7 +8,6 @@ CUSTOM_AFP_CONF="${CUSTOM_AFP_CONF:-false}"
 CUSTOM_SMB_CONF="${CUSTOM_SMB_CONF:-false}"
 CUSTOM_USER="${CUSTOM_USER:-false}"
 TM_USERNAME="${TM_USERNAME:-timemachine}"
-PASSWORD="${PASSWORD:-timemachine}"
 TM_GROUPNAME="${TM_GROUPNAME:-timemachine}"
 TM_UID="${TM_UID:-1000}"
 TM_GID="${TM_GID:-${TM_UID}}"
@@ -19,6 +18,23 @@ HIDE_SHARES="${HIDE_SHARES:-no}"
 
 # common functions
 set_password() {
+  # check PASSWORD and PASSWORD_FILE are both not set
+  if [ ! -z "${PASSWORD}" ]
+  then
+    if [ ! -z "${PASSWORD_FILE}" ]
+    then
+      echo "ERROR: PASSSWORD and PASSWORD_FILE can not both be set. Please choose 1"
+      exit 1
+    fi
+  fi
+
+  PASSWORD="${PASSWORD:-timemachine}"
+
+  if [ ! -z "${PASSWORD_FILE}" ]
+  then
+    PASSWORD="$(cat $PASSWORD_FILE)"
+  fi
+
   # check to see what the password should be set to
   if [ "${PASSWORD}" = "timemachine" ]
   then
