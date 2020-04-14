@@ -17,7 +17,6 @@ EXTERNAL_CONF="${EXTERNAL_CONF:-}"
 HIDE_SHARES="${HIDE_SHARES:-no}"
 
 # common functions
-
 password_var_or_file() {
   # check PASSWORD and PASSWORD_FILE are both not set
   if [ -n "${PASSWORD}" ] && [ -n "${PASSWORD_FILE}" ]
