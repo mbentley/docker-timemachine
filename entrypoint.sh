@@ -17,7 +17,8 @@ EXTERNAL_CONF="${EXTERNAL_CONF:-}"
 HIDE_SHARES="${HIDE_SHARES:-no}"
 
 # common functions
-set_password() {
+
+password_var_or_file() {
   # check PASSWORD and PASSWORD_FILE are both not set
   if [ -n "${PASSWORD}" ] && [ -n "${PASSWORD_FILE}" ]
   then
@@ -25,13 +26,18 @@ set_password() {
     exit 1
   fi
 
-  PASSWORD="${PASSWORD:-timemachine}"
-
+  # check to see if if PASSWORD_FILE is set
   if [ -n "${PASSWORD_FILE}" ]
   then
+    # cat the password file to save the contents to the env var
     PASSWORD=$(cat "${PASSWORD_FILE}")
+  else
+    # if no password file passed; set the password from the env var
+    PASSWORD="${PASSWORD:-timemachine}"
   fi
+}
 
+set_password() {
   # check to see what the password should be set to
   if [ "${PASSWORD}" = "timemachine" ]
   then
@@ -169,6 +175,10 @@ set_permissions() {
     echo "INFO: SET_PERMISSIONS=false; not setting ownership and permissions for /opt/${TM_USERNAME}"
   fi
 }
+
+
+# check to see if the password should be set from a file (secret) or env var
+password_var_or_file
 
 # check to see if if we are using the alpine or debian base images (debian version uses AFP; alpine uses SMB)
 #   this is needed because of differences in syntax for adding groups and users
