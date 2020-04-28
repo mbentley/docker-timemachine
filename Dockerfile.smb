@@ -1,9 +1,8 @@
 FROM alpine:latest
 MAINTAINER Matt Bentley <mbentley@mbentley.net>
 
-# install samba and supervisor; create supporting directories
+# install samba and s6; create supporting directories
 RUN apk add --no-cache avahi avahi-compat-libdns_sd avahi-tools dbus samba-common-tools s6 samba-server &&\
-  mkdir /var/log/supervisor &&\
   mkdir /opt/timemachine &&\
   touch /etc/samba/lmhosts &&\
   rm /etc/samba/smb.conf &&\
@@ -13,7 +12,7 @@ RUN apk add --no-cache avahi avahi-compat-libdns_sd avahi-tools dbus samba-commo
 COPY s6 /etc/s6
 COPY entrypoint.sh /
 
-VOLUME ["/var/log","/var/lib/samba","/var/cache/samba","/run/samba"]
+VOLUME ["/var/lib/samba","/var/cache/samba","/run/samba"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["s6-svscan","/etc/s6"]
