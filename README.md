@@ -33,6 +33,7 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_PORT="445" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -65,6 +66,7 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_PORT="445" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -76,7 +78,7 @@ docker run -d --restart=always \
 
 ### Tips for Automatic Discovery w/Avahi
 
-This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).  Using `--net=host` only works if you do not already run Samba or Avahi on the host!  See below for a workaround.
+This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).  Using `--net=host` only works if you do not already run Samba or Avahi on the host!  Alternatively, you can use the `SMB_PORT` option to change the port that Samba uses.  See below for another workaround if you do not wish to change the Samba port.
 
 ### Conflicts with Samba and/or Avahi on the Host
 
@@ -127,6 +129,7 @@ Default credentials:
 | `PASSWORD` | `timemachine` | sets the password for the `timemachine` user |
 | `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine` |
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
+| `SMB_PORT` | `445` | sets the port that Samba will be available on |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
 
@@ -171,6 +174,7 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_PORT="445" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \

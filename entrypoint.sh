@@ -6,6 +6,7 @@ SET_PERMISSIONS="${SET_PERMISSIONS:-false}"
 SHARE_NAME="${SHARE_NAME:-TimeMachine}"
 CUSTOM_AFP_CONF="${CUSTOM_AFP_CONF:-false}"
 CUSTOM_SMB_CONF="${CUSTOM_SMB_CONF:-false}"
+SMB_PORT="${SMB_PORT:-445}"
 CUSTOM_USER="${CUSTOM_USER:-false}"
 TM_USERNAME="${TM_USERNAME:-timemachine}"
 TM_GROUPNAME="${TM_GROUPNAME:-timemachine}"
@@ -202,6 +203,7 @@ then
     echo "[global]
    server role = standalone server
    workgroup = ${WORKGROUP}
+   smb ports = ${SMB_PORT}
    unix password sync = yes
    log file = /var/log/samba/log.%m
    logging = file
@@ -226,7 +228,7 @@ then
   <name replace-wildcards=\"yes\">%h</name>
   <service>
     <type>_smb._tcp</type>
-    <port>445</port>
+    <port>${SMB_PORT}</port>
   </service>
   <service>
     <type>_device-info._tcp</type>
