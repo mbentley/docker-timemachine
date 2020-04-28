@@ -84,9 +84,18 @@ __Note__: If you are already running Samba on your Docker host (or you're wantin
 
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.0.0/24`, the default gateway is `192.168.0.1`, and `eth0` for the host's network interface):
 
-    ``` bash
-    $ docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macvlan1
-    ```
+   ``` bash
+   $ docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macvlan1
+   ```
+
+   On devices such as Synology DSM, the primary network interface may be `ovs_eth0` due to the usage of Open vSwitch.  If you are unsure of your primary network interface, this command may help:
+
+   ``` bash
+   $ route | grep ^default | awk '{print $NF}'
+   eth0
+   ```
+
+   The `macvlan` driver can use another network interface as the documentation states above but in cases where multiple network interfaces may exist and they might not all be connected, choosing the primary network interface is generally safe.
 
 1. Add `--network macvlan1` and `--ip 192.168.0.x` to your `docker run` command where `192.168.0.x` is a static IP to assign to Time Machine
 
