@@ -175,6 +175,13 @@ set_permissions() {
   fi
 }
 
+write_avahi_adisk_service() {
+  # $1 = DK_NUMBER, $2 = SHARE_NAME
+  echo "INFO: Avahi - adding the 'dk${1}', '${2}' share txt-record to /etc/avahi/services/smbd.service..."
+  # write the '_adisk._tcp' service definition
+  echo "    <txt-record>dk${1}=adVN=${2},adVF=0x82</txt-record>" >> /etc/avahi/services/smbd.service
+}
+
 
 # check to see if the password should be set from a file (secret) or env var
 password_var_or_file
@@ -187,23 +194,6 @@ then
 
   # set default version for timecapsule w/SMB
   MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule8,119}"
-
-  # write smbd.service for Avahi to customize icon
-  echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->
-<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">
-
-<service-group>
-  <name replace-wildcards=\"yes\">%h</name>
-  <service>
-    <type>_smb._tcp</type>
-    <port>445</port>
-  </service>
-  <service>
-    <type>_device-info._tcp</type>
-    <port>0</port>
-  <txt-record>model=${MIMIC_MODEL}</txt-record>
-  </service>
-</service-group>" > /etc/avahi/services/smbd.service
 
   # write global smb.conf if CUSTOM_SMB_CONF is not true
   if [ "${CUSTOM_SMB_CONF}" != "true" ]
@@ -227,9 +217,33 @@ then
   createdir /var/lib/samba/private 700
   createdir /var/log/samba/cores 700
 
+  # write avahi config file (smbd.service) to customize services advertised
+  echo "INFO: Avahi - generating base configuration in /etc/avahi/services/smbd.service..."
+  echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">
+
+<service-group>
+  <name replace-wildcards=\"yes\">%h</name>
+  <service>
+    <type>_smb._tcp</type>
+    <port>445</port>
+  </service>
+  <service>
+    <type>_device-info._tcp</type>
+    <port>9</port>
+  <txt-record>model=${MIMIC_MODEL}</txt-record>
+  </service>
+  <service>
+    <type>_adisk._tcp</type>
+    <port>9</port>
+    <txt-record>sys=adVF=0x100</txt-record>" > /etc/avahi/services/smbd.service
+
   # check to see if we should create one or many users
   if [ -z "${EXTERNAL_CONF}" ]
   then
+    # write the individual share info for avahi discovery
+    write_avahi_adisk_service 0 "${SHARE_NAME}"
+
     # EXTERNAL_CONF not set; assume we are creating one user; create user
     create_smb_user
   else
@@ -240,21 +254,35 @@ then
       exit 1
     fi
 
+    # initialize the DK_NUMBER variable at 0
+    DK_NUMBER=0
+
     # loop through each user file in the EXTERNAL_CONF directory to load the variables
-    for USER_FILE in "${EXTERNAL_CONF}"/*
+    for USER_FILE in "${EXTERNAL_CONF}"/*.conf
     do
       echo "INFO: Loading values from ${USER_FILE}"
       # source the variable file
       # shellcheck disable=SC1090
       . "${USER_FILE}"
 
+      # write the individual share info for avahi discovery
+      write_avahi_adisk_service "${DK_NUMBER}" "${SHARE_NAME}"
+
       # create the user with the specified values
       create_smb_user
 
       # make sure we clear any previously set variables after a loop
       unset TM_USERNAME TM_GROUPNAME PASSWORD SHARE_NAME VOLUME_SIZE_LIMIT TM_UID TM_GID
+
+      # increment DK_NUMBER
+      DK_NUMBER=$((DK_NUMBER+1))
     done
   fi
+
+  # finish writing the avahi discovery file
+  echo "INFO: Avahi - completing the configuration in /etc/avahi/services/smbd.service..."
+  echo "  </service>
+</service-group>" >> /etc/avahi/services/smbd.service
 
   # cleanup PID files
   for PIDFILE in nmbd smbd

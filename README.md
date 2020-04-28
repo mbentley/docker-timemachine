@@ -7,10 +7,10 @@ docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine
 * `latest`, `afp` - AFP image based off of debian:jessie
 * `smb` - SMB image based off of alpine:latest
 
-_Warning_: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple.  I do not plan on adding any new features to the AFP based config.
+_Warning_: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple and I've found it to be much more stable.  I do not plan on adding any new features to the AFP based config.
 
 To pull this image:
-`docker pull mbentley/timemachine`
+`docker pull mbentley/timemachine:smb`
 
 ## Example usage for SMB
 
@@ -36,7 +36,6 @@ docker run -d --restart=always \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
-  -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
@@ -69,14 +68,38 @@ docker run -d --restart=always \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
-  -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
   mbentley/timemachine:smb
 ```
 
-This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).
+### Tips for Automatic Discovery w/Avahi
+
+This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).  Using `--net=host` only works if you do not already run Samba or Avahi on the host!  See below for a workaround.
+
+### Conflicts with Samba and/or Avahi on the Host
+
+__Note__: If you are already running Samba on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba install.  As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
+
+1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.0.0/24`, the default gateway is `192.168.0.1`, and `eth0` for the host's network interface):
+
+   ``` bash
+   $ docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macvlan1
+   ```
+
+   On devices such as Synology DSM, the primary network interface may be `ovs_eth0` due to the usage of Open vSwitch.  If you are unsure of your primary network interface, this command may help:
+
+   ``` bash
+   $ route | grep ^default | awk '{print $NF}'
+   eth0
+   ```
+
+   The `macvlan` driver can use another network interface as the documentation states above but in cases where multiple network interfaces may exist and they might not all be connected, choosing the primary network interface is generally safe.
+
+1. Add `--network macvlan1` and `--ip 192.168.0.x` to your `docker run` command where `192.168.0.x` is a static IP to assign to Time Machine
+
+### Volume & File system Permissions
 
 If you're using an external volume like in the example above, you will need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
 
@@ -87,14 +110,14 @@ Default credentials:
 * Username: `timemachine`
 * Password: `timemachine`
 
-Optional variables for SMB:
+### Optional variables for SMB
 
 | Variable | Default | Description |
 | :------- | :------ | :---------- |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
 | `DEBUG_LEVEL` | `1` | sets the debug level for `nmbd` and `smbd` |
-| `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
+| `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files, ending in `.conf`, for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
 | `HIDE_SHARES` | `no` | set to `yes` if you would like only the share(s) a user can access to appear |
 | `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
 | `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
@@ -109,11 +132,11 @@ Optional variables for SMB:
 
 ### Adding Multiple Users & Shares
 
-In order to add multiple users who have their own shares, you will need to create a file for each user and put them in a directory _with no other contents_.  The file name does not matter but the contents must be environment variable formatted proper and include all of the values below in the example.  Only `VOLUME_SIZE_LIMIT` can be empty if you do not want to set a quota.
+In order to add multiple users who have their own shares, you will need to create a file for each user and put them in a directory. The file name __must__ end in `.conf` or it will not be parsed and the contents must be environment variable formatted proper and include all of the values below in the example.  Only `VOLUME_SIZE_LIMIT` can be empty if you do not want to set a quota.
 
 #### Example `EXTERNAL_CONF` File
 
-This is an example to create a user named `foo`.  Create multiple files with different attributes to create multiple users and shares.  There must be no other files in the directory specified or this will not work.
+This is an example to create a user named `foo`.  The `EXTERNAL_CONF` variable should point to the _directory_ that contains the user definition files.  Create multiple files with different attributes to create multiple users and shares.
 
 `foo.conf`
 
@@ -127,7 +150,7 @@ TM_UID=1000
 TM_GID=1000
 ```
 
-#### Example run command
+#### Example run command for `EXTERNAL_CONF`
 
 This run command has the necessary path to where the external user files will be mounted (set in `EXTERNAL_CONF`) and the volume mount that matches the path specified in `EXTERNAL_CONF`.
 
@@ -151,7 +174,6 @@ docker run -d --restart=always \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
-  -v timemachine-var-log:/var/log \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
@@ -159,7 +181,7 @@ docker run -d --restart=always \
   mbentley/timemachine:smb
 ```
 
-#### Using a password file
+### Using a password file
 
 This is an example to using Docker secrets to pass the password via a file
 
@@ -169,7 +191,7 @@ This is an example to using Docker secrets to pass the password via a file
 my_secret_password
 ```
 
-#### Example docker-compose file
+### Example docker-compose file
 
 The follow example shows the key values required for in your compose file.
 
