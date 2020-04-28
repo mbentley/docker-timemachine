@@ -108,7 +108,7 @@ Default credentials:
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
 | `DEBUG_LEVEL` | `1` | sets the debug level for `nmbd` and `smbd` |
-| `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
+| `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files, ending in `.conf`, for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
 | `HIDE_SHARES` | `no` | set to `yes` if you would like only the share(s) a user can access to appear |
 | `MIMIC_MODEL` | `TimeCapsule8,119` | sets the value of time machine to mimic |
 | `TM_USERNAME` | `timemachine` | sets the username time machine runs as |
@@ -123,11 +123,11 @@ Default credentials:
 
 ### Adding Multiple Users & Shares
 
-In order to add multiple users who have their own shares, you will need to create a file for each user and put them in a directory _with no other contents_.  The file name does not matter but the contents must be environment variable formatted proper and include all of the values below in the example.  Only `VOLUME_SIZE_LIMIT` can be empty if you do not want to set a quota.
+In order to add multiple users who have their own shares, you will need to create a file for each user and put them in a directory. The file name __must__ end in `.conf` or it will not be parsed and the contents must be environment variable formatted proper and include all of the values below in the example.  Only `VOLUME_SIZE_LIMIT` can be empty if you do not want to set a quota.
 
 #### Example `EXTERNAL_CONF` File
 
-This is an example to create a user named `foo`.  The `EXTERNAL_CONF` variable should point to the _directory_ that contains the user definition files.  Create multiple files with different attributes to create multiple users and shares.  There must be no other files in the directory specified or this will not work as all files in the directory are parsed.
+This is an example to create a user named `foo`.  The `EXTERNAL_CONF` variable should point to the _directory_ that contains the user definition files.  Create multiple files with different attributes to create multiple users and shares.
 
 `foo.conf`
 

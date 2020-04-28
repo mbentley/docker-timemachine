@@ -258,7 +258,7 @@ then
     DK_NUMBER=0
 
     # loop through each user file in the EXTERNAL_CONF directory to load the variables
-    for USER_FILE in "${EXTERNAL_CONF}"/*
+    for USER_FILE in "${EXTERNAL_CONF}"/*.conf
     do
       echo "INFO: Loading values from ${USER_FILE}"
       # source the variable file
