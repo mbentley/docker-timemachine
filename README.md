@@ -6,6 +6,7 @@ docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine
 
 * `latest`, `afp` - AFP image based off of debian:jessie
 * `smb` - SMB image based off of alpine:latest
+* `smb-armv7l` - SMB image based off of alpine:latest for the `armv7l` architecture
 
 __Warning__: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple and I've found it to be much more stable.  I do not plan on adding any new features to the AFP based config and I [plan on switching the default image in the `latest` tag to the SMB variant](https://github.com/mbentley/docker-timemachine/issues/38) soon.
 
