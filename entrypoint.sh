@@ -103,11 +103,18 @@ create_smb_user() {
     then
       echo "INFO: Group ${TM_GROUPNAME} exists; skipping creation"
     else
-      echo "INFO: Group ${TM_GROUPNAME} doesn't exist; creating..."
-      # create the group
-      addgroup -g "${TM_GID}" "${TM_GROUPNAME}"
+      # make sure the group doesn't already exist with a different name
+      if awk -F ':' '{print $3}' /etc/group | grep -q "^${TM_GID}$"
+      then
+        EXISTING_GROUP="$(grep ":${TM_GID}:" /etc/group | awk -F ':' '{print $1}')"
+        echo "INFO: Group already exists with a different name; renaming '${EXISTING_GROUP}' to '${TM_GROUPNAME}'..."
+        sed -i "s/^${EXISTING_GROUP}:/${TM_GROUPNAME}:/g" /etc/group
+      else
+        echo "INFO: Group ${TM_GROUPNAME} doesn't exist; creating..."
+        # create the group
+        addgroup -g "${TM_GID}" "${TM_GROUPNAME}"
+      fi
     fi
-
     # check to see if user exists; if not, create it
     if id -u "${TM_USERNAME}" > /dev/null 2>&1
     then
@@ -323,9 +330,17 @@ else
     then
       echo "INFO: Group exists; skipping creation"
     else
-      echo "INFO: Group doesn't exist; creating..."
-      # create the group
-      groupadd -g "${TM_GID}" "${TM_GROUPNAME}"
+      # make sure the group doesn't already exist with a different name
+      if awk -F ':' '{print $3}' /etc/group | grep -q "^${TM_GID}$"
+      then
+        EXISTING_GROUP="$(grep ":${TM_GID}:" /etc/group | awk -F ':' '{print $1}')"
+        echo "INFO: Group already exists with a different name; renaming '${EXISTING_GROUP}' to '${TM_GROUPNAME}'..."
+        groupmod -n "${TM_GROUPNAME}" "${EXISTING_GROUP}"
+      else
+        echo "INFO: Group doesn't exist; creating..."
+        # create the group
+        groupadd -g "${TM_GID}" "${TM_GROUPNAME}"
+      fi
     fi
 
     # check to see if user exists; if not, create it
