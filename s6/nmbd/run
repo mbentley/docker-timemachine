@@ -2,4 +2,4 @@
 
 DEBUG_LEVEL="${DEBUG_LEVEL:-1}"
 
-exec /usr/sbin/nmbd --foreground --no-process-group --log-stdout --debuglevel="${DEBUG_LEVEL}"
+exec /usr/sbin/nmbd --foreground --no-process-group --log-stdout --debuglevel="${DEBUG_LEVEL}" < /dev/null
