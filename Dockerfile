@@ -1,1 +1,1 @@
-Dockerfile.afp
+Dockerfile.smb
