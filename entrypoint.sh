@@ -147,7 +147,7 @@ create_smb_user() {
    valid users = ${TM_USERNAME}
    browseable = yes
    writable = yes
-   vfs objects = catia fruit streams_xattr" >> /etc/samba/smb.conf
+   vfs objects = fruit streams_xattr" >> /etc/samba/smb.conf
   else
     # CUSTOM_SMB_CONF was specified; make sure the file exists
     if [ -f "/etc/samba/smb.conf" ]
@@ -208,10 +208,11 @@ then
   then
     echo "INFO: CUSTOM_SMB_CONF=false; generating [global] section of /etc/samba/smb.conf..."
     echo "[global]
+   min protocol = SMB2
    server role = standalone server
    workgroup = ${WORKGROUP}
    smb ports = ${SMB_PORT}
-   unix password sync = yes
+   #unix password sync = yes
    log file = /var/log/samba/log.%m
    logging = file
    max log size = 1000
@@ -219,7 +220,13 @@ then
    load printers = no
    access based share enum = ${HIDE_SHARES}
    hide unreadable = ${HIDE_SHARES}
-   fruit:model = ${MIMIC_MODEL}" > /etc/samba/smb.conf
+   vfs objects = fruit streams_xattr
+   fruit:delete_empty_adfiles = yes
+   fruit:metadata = stream
+   fruit:model = ${MIMIC_MODEL}
+   fruit:posix_rename = yes
+   fruit:veto_appledouble = no
+   fruit:wipe_intentionally_left_blank_rfork = yes" > /etc/samba/smb.conf
   fi
 
   # mkdir if needed
