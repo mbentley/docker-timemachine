@@ -158,6 +158,9 @@ TM_GID=1000
 
 This run command has the necessary path to where the external user files will be mounted (set in `EXTERNAL_CONF`) and the volume mount that matches the path specified in `EXTERNAL_CONF`.
 
+__Note__: You will need to either bind mount `/opt` or each `SHARE_NAME` directory under `/opt` for each user.
+
+
 ```
 docker run -d --restart=always \
   --name timemachine \
@@ -178,7 +181,7 @@ docker run -d --restart=always \
   -e SMB_PORT="445" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
-  -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
+  -v /path/on/host/to/backup/to/for/timemachine:/opt \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
   -v timemachine-run-samba:/run/samba \
