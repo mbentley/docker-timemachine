@@ -9,7 +9,7 @@ services:
       - EXTERNAL_CONF=
       - HIDE_SHARES=no
       - MIMIC_MODEL=TimeCapsule8,119
-      - TM_USER=timemachine
+      - TM_USERNAME=timemachine
       - TM_GROUPNAME=timemachine
       - TM_UID=1000
       - TM_GID=1000
