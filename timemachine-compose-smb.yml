@@ -35,3 +35,8 @@ services:
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:smb
+
+volumes:
+  timemachine-var-lib-samba:
+  timemachine-var-cache-samba:
+  timemachine-run-samba:
