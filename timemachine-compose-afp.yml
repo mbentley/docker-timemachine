@@ -28,3 +28,7 @@ services:
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:latest
+
+volumes:
+  timemachine-netatalk:
+  timemachine-logs:
