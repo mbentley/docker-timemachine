@@ -34,7 +34,10 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_INHERIT_PERMISSIONS="no" \
+  -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
+  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -67,7 +70,10 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_INHERIT_PERMISSIONS="no" \
+  -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
+  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -88,7 +94,7 @@ __Note__: If you are already running Samba on your Docker host (or you're wantin
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.0.0/24`, the default gateway is `192.168.0.1`, and `eth0` for the host's network interface):
 
    ``` bash
-   $ docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macvlan1
+   docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macvlan1
    ```
 
    On devices such as Synology DSM, the primary network interface may be `ovs_eth0` due to the usage of Open vSwitch.  If you are unsure of your primary network interface, this command may help:
@@ -128,9 +134,12 @@ Default credentials:
 | `TM_UID` | `1000` | sets the UID of the `TM_USERNAME` user |
 | `TM_GID` | `1000` | sets the GID of the `TM_GROUPNAME` group |
 | `PASSWORD` | `timemachine` | sets the password for the `timemachine` user |
-| `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on `/opt/timemachine` |
+| `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on the `/opt/<username>` in the container |
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
+| `SMB_INHERIT_PERMISSIONS` | `no` | if yes, permissions for new files will be forced to match the parent folder |
+| `SMB_NFS_ACES` | `yes` | support for querying and modifying the UNIX mode of directory entries via NFS ACEs |
 | `SMB_PORT` | `445` | sets the port that Samba will be available on |
+| `SMB_VFS_OBJECTS` | `fruit streams_xattr` | sets the values of `vfs objects` |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
 
@@ -160,7 +169,6 @@ This run command has the necessary path to where the external user files will be
 
 __Note__: You will need to either bind mount `/opt` or each `SHARE_NAME` directory under `/opt` for each user.
 
-
 ```
 docker run -d --restart=always \
   --name timemachine \
@@ -178,7 +186,10 @@ docker run -d --restart=always \
   -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
+  -e SMB_INHERIT_PERMISSIONS="no" \
+  -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
+  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt \
