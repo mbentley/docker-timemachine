@@ -16,6 +16,9 @@ VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 WORKGROUP="${WORKGROUP:-WORKGROUP}"
 EXTERNAL_CONF="${EXTERNAL_CONF:-}"
 HIDE_SHARES="${HIDE_SHARES:-no}"
+SMB_VFS_OBJECTS="${SMB_VFS_OBJECTS:-fruit streams_xattr}"
+SMB_INHERIT_PERMISSIONS="${SMB_INHERIT_PERMISSIONS:-no}"
+SMB_NFS_ACES="${SMB_NFS_ACES:-yes}"
 
 # common functions
 password_var_or_file() {
@@ -70,12 +73,16 @@ create_user_directory() {
 }
 
 createdir() {
-  # create directory if needed
-  if [ ! -d "${1}" ]; then
-    echo "Creating ${1}"
+  # create directory, if needed
+  if [ ! -d "${1}" ]
+  then
+    echo "INFO: Creating ${1}"
     mkdir -p "${1}"
   fi
-  if [ -n "${2}" ]; then
+
+  # set permissions, if needed
+  if [ -n "${2}" ]
+  then
     chmod "${2}" "${1}"
   fi
 }
@@ -143,11 +150,13 @@ create_smb_user() {
    fruit:aapl = yes
    fruit:time machine = yes
    fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
+   fruit:nfs_aces = ${SMB_NFS_ACES}
    path = /opt/${TM_USERNAME}
+   inherit permissions = ${SMB_INHERIT_PERMISSIONS}
    valid users = ${TM_USERNAME}
    browseable = yes
    writable = yes
-   vfs objects = fruit streams_xattr" >> /etc/samba/smb.conf
+   vfs objects = ${SMB_VFS_OBJECTS}" >> /etc/samba/smb.conf
   else
     # CUSTOM_SMB_CONF was specified; make sure the file exists
     if [ -f "/etc/samba/smb.conf" ]
@@ -218,12 +227,14 @@ then
    max log size = 1000
    security = user
    load printers = no
+   inherit permissions = ${SMB_INHERIT_PERMISSIONS}
    access based share enum = ${HIDE_SHARES}
    hide unreadable = ${HIDE_SHARES}
-   vfs objects = fruit streams_xattr
+   vfs objects = ${SMB_VFS_OBJECTS}
    fruit:delete_empty_adfiles = yes
    fruit:metadata = stream
    fruit:model = ${MIMIC_MODEL}
+   fruit:nfs_aces = ${SMB_NFS_ACES}
    fruit:posix_rename = yes
    fruit:veto_appledouble = no
    fruit:wipe_intentionally_left_blank_rfork = yes" > /etc/samba/smb.conf
