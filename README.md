@@ -139,7 +139,7 @@ Default credentials:
 | `SMB_INHERIT_PERMISSIONS` | `no` | if yes, permissions for new files will be forced to match the parent folder |
 | `SMB_NFS_ACES` | `yes` | support for querying and modifying the UNIX mode of directory entries via NFS ACEs |
 | `SMB_PORT` | `445` | sets the port that Samba will be available on |
-| `SMB_VFS_OBJECTS` | `fruit streams_xattr` | sets the values of `vfs objects` |
+| `SMB_VFS_OBJECTS` | `acl_xattr fruit streams_xattr` | sets the values of `vfs objects` |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
 
