@@ -24,14 +24,14 @@ services:
       - WORKGROUP=WORKGROUP
     restart: unless-stopped
     ports:
-     - "137:137/udp"
-     - "138:138/udp"
-     - "139:139"
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139"
     volumes:
-     - /path/to/your/timemachine/volume:/opt/timemachine
-     - timemachine-var-lib-samba:/var/lib/samba
-     - timemachine-var-cache-samba:/var/cache/samba
-     - timemachine-run-samba:/run/samba
+      - /path/to/your/timemachine/volume:/opt/timemachine
+      - timemachine-var-lib-samba:/var/lib/samba
+      - timemachine-var-cache-samba:/var/cache/samba
+      - timemachine-run-samba:/run/samba
     ulimits:
       nofile:
         soft: 65536
