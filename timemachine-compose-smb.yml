@@ -19,7 +19,7 @@ services:
       - SMB_INHERIT_PERMISSIONS=no
       - SMB_NFS_ACES=yes
       - SMB_PORT=445
-      - SMB_VFS_OBJECTS=fruit streams_xattr
+      - SMB_VFS_OBJECTS=acl_xattr fruit streams_xattr
       - VOLUME_SIZE_LIMIT=0
       - WORKGROUP=WORKGROUP
     restart: unless-stopped

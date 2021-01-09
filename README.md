@@ -37,7 +37,7 @@ docker run -d --restart=always \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
-  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
+  -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -73,7 +73,7 @@ docker run -d --restart=always \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
-  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
+  -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
@@ -189,7 +189,7 @@ docker run -d --restart=always \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
   -e SMB_PORT="445" \
-  -e SMB_VFS_OBJECTS="fruit streams_xattr" \
+  -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt \
