@@ -1,0 +1,56 @@
+version: "3.7"
+services:
+  timemachine:
+    hostname: timemachine
+    mac_address: "AA:BB:CC:DD:EE:FF"
+    networks:
+      timemachine:
+        ipv4_address: 192.168.1.100
+    environment:
+      - CUSTOM_SMB_CONF=false
+      - CUSTOM_USER=false
+      - DEBUG_LEVEL=1
+      - EXTERNAL_CONF=
+      - HIDE_SHARES=no
+      - MIMIC_MODEL=TimeCapsule8,119
+      - TM_USERNAME=timemachine
+      - TM_GROUPNAME=timemachine
+      - TM_UID=1000
+      - TM_GID=1000
+      - PASSWORD=timemachine
+      - SET_PERMISSIONS=false
+      - SHARE_NAME=TimeMachine
+      - SMB_INHERIT_PERMISSIONS=no
+      - SMB_NFS_ACES=yes
+      - SMB_PORT=445
+      - SMB_VFS_OBJECTS=acl_xattr fruit streams_xattr
+      - VOLUME_SIZE_LIMIT=0
+      - WORKGROUP=WORKGROUP
+    restart: unless-stopped
+    volumes:
+      - /path/to/your/timemachine/volume:/opt/timemachine
+      - timemachine-var-lib-samba:/var/lib/samba
+      - timemachine-var-cache-samba:/var/cache/samba
+      - timemachine-run-samba:/run/samba
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    container_name: timemachine
+    image: mbentley/timemachine:smb-armv7l
+
+volumes:
+  timemachine-var-lib-samba:
+  timemachine-var-cache-samba:
+  timemachine-run-samba:
+
+networks:
+  timemachine:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          ip_range: 192.168.1.0/24
+          gateway: 192.168.1.1
