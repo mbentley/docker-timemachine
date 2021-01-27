@@ -19,6 +19,7 @@ HIDE_SHARES="${HIDE_SHARES:-no}"
 SMB_VFS_OBJECTS="${SMB_VFS_OBJECTS:-acl_xattr fruit streams_xattr}"
 SMB_INHERIT_PERMISSIONS="${SMB_INHERIT_PERMISSIONS:-no}"
 SMB_NFS_ACES="${SMB_NFS_ACES:-yes}"
+SMB_METADATA="${SMB_METADATA:-stream}"
 
 # common functions
 password_var_or_file() {
@@ -147,16 +148,13 @@ create_smb_user() {
     echo "INFO: CUSTOM_SMB_CONF=false; generating [${SHARE_NAME}] section of /etc/samba/smb.conf..."
     echo "
 [${SHARE_NAME}]
-   fruit:aapl = yes
-   fruit:time machine = yes
-   fruit:time machine max size = ${VOLUME_SIZE_LIMIT}
-   fruit:nfs_aces = ${SMB_NFS_ACES}
    path = /opt/${TM_USERNAME}
    inherit permissions = ${SMB_INHERIT_PERMISSIONS}
+   read only = no
    valid users = ${TM_USERNAME}
-   browseable = yes
-   writable = yes
-   vfs objects = ${SMB_VFS_OBJECTS}" >> /etc/samba/smb.conf
+   vfs objects = ${SMB_VFS_OBJECTS}
+   fruit:time machine = yes
+   fruit:time machine max size = ${VOLUME_SIZE_LIMIT}" >> /etc/samba/smb.conf
   else
     # CUSTOM_SMB_CONF was specified; make sure the file exists
     if [ -f "/etc/samba/smb.conf" ]
@@ -217,27 +215,27 @@ then
   then
     echo "INFO: CUSTOM_SMB_CONF=false; generating [global] section of /etc/samba/smb.conf..."
     echo "[global]
-   min protocol = SMB2
-   server role = standalone server
-   workgroup = ${WORKGROUP}
-   smb ports = ${SMB_PORT}
-   #unix password sync = yes
+   access based share enum = ${HIDE_SHARES}
+   hide unreadable = ${HIDE_SHARES}
+   inherit permissions = ${SMB_INHERIT_PERMISSIONS}
+   load printers = no
    log file = /var/log/samba/log.%m
    logging = file
    max log size = 1000
    security = user
-   load printers = no
-   inherit permissions = ${SMB_INHERIT_PERMISSIONS}
-   access based share enum = ${HIDE_SHARES}
-   hide unreadable = ${HIDE_SHARES}
+   server min protocol = SMB2
+   server role = standalone server
+   smb ports = ${SMB_PORT}
+   workgroup = ${WORKGROUP}
    vfs objects = ${SMB_VFS_OBJECTS}
-   fruit:delete_empty_adfiles = yes
-   fruit:metadata = stream
-   fruit:model = ${MIMIC_MODEL}
+   fruit:aapl = yes
    fruit:nfs_aces = ${SMB_NFS_ACES}
-   fruit:posix_rename = yes
+   fruit:model = ${MIMIC_MODEL}
+   fruit:metadata = ${SMB_METADATA}
    fruit:veto_appledouble = no
-   fruit:wipe_intentionally_left_blank_rfork = yes" > /etc/samba/smb.conf
+   fruit:posix_rename = yes
+   fruit:wipe_intentionally_left_blank_rfork = yes
+   fruit:delete_empty_adfiles = yes" > /etc/samba/smb.conf
   fi
 
   # mkdir if needed

@@ -36,6 +36,7 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
+  -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
@@ -72,6 +73,7 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
+  -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
@@ -112,24 +114,24 @@ __Note__: If you are already running Samba on your Docker host (or you're wantin
 
 ```
 services:
-timemachine:
-  hostname: timemachine
-  mac_address: "AA:BB:CC:DD:EE:FF"
-  networks:
-    timemachine:
-      ipv4_address: 192.168.1.x
+  timemachine:
+    hostname: timemachine
+    mac_address: "AA:BB:CC:DD:EE:FF"
+    networks:
+      timemachine:
+        ipv4_address: 192.168.1.x
 
 networks:
-timemachine:
-  driver: macvlan
-  driver_opts:
-    parent: eth0
-  ipam:
-    config:
-      - subnet: 192.168.1.0/24
-        ip_range: 192.168.1.0/24
-        gateway: 192.168.1.1
-```
+  timemachine:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          ip_range: 192.168.1.0/24
+          gateway: 192.168.1.1
+  ```
 
 1. `hostname`, `mac_address`, and `ipv4_address` are optional, but can be used to control how it is configured on the network. If not defined, random values will be used.
 2. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compse specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
@@ -164,6 +166,7 @@ Default credentials:
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
 | `SMB_INHERIT_PERMISSIONS` | `no` | if yes, permissions for new files will be forced to match the parent folder |
 | `SMB_NFS_ACES` | `yes` | value of `fruit:nfs_aces`; support for querying and modifying the UNIX mode of directory entries via NFS ACEs |
+| `SMB_METADATA` | `stream` | value of `fruit:metadata`; controls where the OS X metadata stream is stored |
 | `SMB_PORT` | `445` | sets the port that Samba will be available on |
 | `SMB_VFS_OBJECTS` | `acl_xattr fruit streams_xattr` | value of `vfs objects` |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
@@ -214,6 +217,7 @@ docker run -d --restart=always \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
   -e SMB_NFS_ACES="yes" \
+  -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
