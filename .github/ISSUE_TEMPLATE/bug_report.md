@@ -21,7 +21,11 @@ Steps to reproduce the behavior:
 <!-- A clear and concise description of what you expected to happen. -->
 
 **How you're launching your container**
-Include your `docker run` or compose file to make analysis easier.
+<!-- Include your `docker run` or compose file to make analysis easier. -->
+
+```
+docker run ...
+```
 
 **Container Logs**
 <!-- Collect logs by using something similar to `docker logs timemachine >& output.log` if needed and attach them or copy out the relevant portions of the error.  When in doubt, do both -->
