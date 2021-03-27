@@ -92,7 +92,8 @@ This works best with `--net=host` so that discovery can be broadcast.  Otherwise
 
 ### Conflicts with Samba and/or Avahi on the Host
 
-__Note__: If you are already running Samba on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba install.  As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
+__Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container. 
+As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
 
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.1.0/24`, the default gateway is `192.168.1.1`, and `eth0` for the host's network interface):
 
