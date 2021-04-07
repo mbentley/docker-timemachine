@@ -435,6 +435,10 @@ else
   fi
 fi
 
+# perform quick test to see if xattrs are supported
+(cd /opt/${TM_USERNAME} && touch xattr-test; setfattr -n user.test -v "hello" xattr-test >/dev/null 2>&1 && rm xattr-test && echo "INFO: xattr test successful - your persistent data store supports xattrs") ||\
+  (echo "WARNING: test to set xattrs on a test file failed. Time machine may fail to back up to your persitent storage location."; rm xattr-test)
+
 # run CMD
 echo "INFO: entrypoint complete; executing '${*}'"
 exec "${@}"
