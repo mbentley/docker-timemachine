@@ -136,11 +136,13 @@ networks:
   ```
 
 1. `hostname`, `mac_address`, and `ipv4_address` are optional, but can be used to control how it is configured on the network. If not defined, random values will be used.
-2. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compse specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
+2. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compose specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
 
 ### Volume & File system Permissions
 
 If you're using an external volume like in the example above, you will need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
+
+The backing data store for your persistent time machine data _must_ support extended file attributes (`xattr`).  Remote file systems, such as NFS, will very likely not support `xattr`s.  See [#61](https://github.com/mbentley/docker-timemachine/issues/61) for more details.  This image will check and try to set `xattr`s to a test file in `/opt/${TM_USERNAME}` to warn the user if they are not supported but this will not prevent the image from running.
 
 Also note that if you change the `TM_USERNAME` value that it will change the data path from `/opt/timemachine` to `/opt/<value-of-TM_USERNAME>`.
 
