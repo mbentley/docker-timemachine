@@ -435,9 +435,28 @@ else
   fi
 fi
 
-# perform quick test to see if xattrs are supported
-(cd /opt/${TM_USERNAME} && touch xattr-test; setfattr -n user.test -v "hello" xattr-test >/dev/null 2>&1 && rm xattr-test && echo "INFO: xattr test successful - your persistent data store supports xattrs") ||\
-  (echo "WARNING: test to set xattrs on a test file failed. Time machine may fail to back up to your persitent storage location."; rm xattr-test)
+# perform quick test to see if xattrs are supported on a path found in smb.conf
+echo "INFO: running test for xattr support on your time machine persistent storage location..."
+
+# get the first path found in smb.conf
+TEST_PATH="$(grep -m 1 "path =" < /etc/samba/smb.conf | awk '{print $3}')"
+if [ -z "${TEST_PATH}" ]
+then
+  echo "WARNING: unable to get test path from smb.conf; unable to test for xattr support"
+else
+  # execute test by touching a file and trying to set xattrs to the file, capture the result, and remove the test file
+  touch "${TEST_PATH}/xattr-test" || echo "WARNING: unable to write test file (is your persistent storage location read only or an invalid path?)"
+  TEST_RESULT="$(setfattr -n user.test -v "hello" "${TEST_PATH}/xattr-test" >/dev/null 2>&1; echo $?)"
+  rm -f "${TEST_PATH}/xattr-test"
+
+  # check to see what the results of the set xattrs test was
+  if [ "${TEST_RESULT}" = "0" ]
+  then
+    echo "INFO: xattr test successful - your persistent data store supports xattrs"
+  else
+    echo "WARNING: xattr test failure - unable to set xattrs on your persistent data store. Time machine backups may fail!"
+  fi
+fi
 
 # run CMD
 echo "INFO: entrypoint complete; executing '${*}'"
