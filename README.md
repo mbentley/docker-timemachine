@@ -90,7 +90,27 @@ docker run -d --restart=always \
 
 This works best with `--net=host` so that discovery can be broadcast.  Otherwise, you will need to expose the above ports and then you must manually map the share in Finder for it to show up (open `Finder`, click `Shared`, and connect as `smb://hostname-or-ip/TimeMachine` with your TimeMachine credentials).  Using `--net=host` only works if you do not already run Samba or Avahi on the host!  Alternatively, you can use the `SMB_PORT` option to change the port that Samba uses.  See below for another workaround if you do not wish to change the Samba port.
 
-### Conflicts with Samba and/or Avahi on the Host
+### Known Issues
+
+#### Unable to start the `armv7l` image
+
+If you are running the `armv7l` image, you may see and error when trying to start the container:
+
+```
+s6-svscan: warning: unable to iopause: Operation not permitted
+```
+
+This is due to an issue with the `libseccomp2` package.  You have two options:
+
+1. Disable seccomp for the container by adding the `--security-opt seccomp=unconfined` argument (this has security implications)
+1. Install a backported version of `libseccomp2`:
+
+   ```
+   wget http://ftp.us.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.4.4-1~bpo10+1_armhf.deb
+   sudo dpkg -i libseccomp2_2.4.4-1~bpo10+1_armhf.deb
+   ```
+
+#### Conflicts with Samba and/or Avahi on the Host
 
 __Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container. 
 As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
@@ -112,7 +132,7 @@ As an alternative, you can use the [`macvlan` driver in Docker](https://docs.doc
 
 1. Add `--network macvlan1` and `--ip 192.168.1.x` to your `docker run` command where `192.168.1.x` is a static IP to assign to Time Machine
 
-#### Example macvlan setup using docker-compose
+##### Example macvlan setup using docker-compose
 
 ```
 services:
@@ -138,7 +158,7 @@ networks:
 1. `hostname`, `mac_address`, and `ipv4_address` are optional, but can be used to control how it is configured on the network. If not defined, random values will be used.
 2. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compose specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
 
-### Volume & File system Permissions
+#### Volume & File system Permissions
 
 If you're using an external volume like in the example above, you will need to set the filesystem permissions on disk.  By default, the `timemachine` user is `1000:1000`.
 
