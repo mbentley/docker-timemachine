@@ -110,6 +110,8 @@ This is due to an issue with the `libseccomp2` package.  You have two options:
    sudo dpkg -i libseccomp2_2.4.4-1~bpo10+1_armhf.deb
    ```
 
+This issue has been observed on Raspberry Pi OS (formerly known as Raspbian) based on Debian 10 (Buster) but may also be found on other distros as they may commonly use the `libseccomp2` package version `2.3.3-4`.
+
 #### Conflicts with Samba and/or Avahi on the Host
 
 __Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container. 
