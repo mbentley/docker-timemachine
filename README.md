@@ -2,12 +2,30 @@
 
 docker image to run Samba or AFP (netatalk) to provide a compatible Time Machine for MacOS
 
-## Tags
+## Image Tags
 
-* `latest`, `smb` - SMB image based off of alpine:latest
-* `smb-arm64` - SMB image based off of alpine:latest for the `arm64` architecture
-* `smb-armv7l` - SMB image based off of alpine:latest for the `armv7l` architecture
-* `afp` - AFP image based off of debian:jessie _(deprecated but still available)_
+### Multi-arch Tags
+
+The following tags have multi-arch support for `amd64`, `armv7l`, and `arm64` and will automatically pull the correct tag based on your system's architecture:
+
+`latest`, `smb`
+
+### Explicit Architecture Tags
+
+These tags will explicitly pull the image for the listed architecture and are bit for bit identical to the multi-arch tags images.
+
+#### [`amd64`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=amd64)
+
+* `latest-smb-amd64`, `smb-amd64` - SMB image based off of alpine:latest
+* `afp`, `afp-amd64` - AFP image based off of debian:jessie _(deprecated but still available)_
+
+#### [`armv7l`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=armv7l)
+
+* `latest-smb-armv7l`, `smb-armv7l` - SMB image based off of alpine:latest for the `armv7l` architecture
+
+#### [`arm64`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=arm64)
+
+* `latest-smb-arm64`, `smb-arm64` - SMB image based off of alpine:latest for the `arm64` architecture
 
 __Warning__: I would strongly suggest migrating to the SMB image as AFP is being deprecated by Apple and I've found it to be much more stable.  I do not plan on adding any new features to the AFP based config and I [switched the default image in the `latest` tag to the SMB variant on October 15, 2020](https://github.com/mbentley/docker-timemachine/issues/38).
 
@@ -114,7 +132,7 @@ This issue has been observed on Raspberry Pi OS (formerly known as Raspbian) bas
 
 #### Conflicts with Samba and/or Avahi on the Host
 
-__Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container. 
+__Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container.
 As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
 
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.1.0/24`, the default gateway is `192.168.1.1`, and `eth0` for the host's network interface):
@@ -158,7 +176,7 @@ networks:
   ```
 
 1. `hostname`, `mac_address`, and `ipv4_address` are optional, but can be used to control how it is configured on the network. If not defined, random values will be used.
-2. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compose specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
+1. This config requires [docker-compose version](https://docs.docker.com/compose/compose-file/) `1.27.0+` which implements the [compose specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md).
 
 #### Volume & File system Permissions
 
