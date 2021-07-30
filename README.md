@@ -10,6 +10,12 @@ The following tags have multi-arch support for `amd64`, `armv7l`, and `arm64` an
 
 `latest`, `smb`
 
+__Note__: The `afp` tag has been deprecated in terms of new feature updates and is only available for `amd64`.
+
+### Date Specific Tags
+
+The `smb` tags also have unique manifests that are generated daily.  These are in the format `smb-YYYYMMDD` (e.g. - `smb-20210730`).  Each one of these tags will be generated daily and is essentially a point in time snapshot of the `smb` tag's manifest that you can pin to if you wish.  Please note that these tags will remain available on Docker Hub for __6 months__ and will not receive security fixes.  You will need to update to newer tags as they are published in order to get updated images.  If you do not care about specific image digests to pin to, I would suggest just using the `smb` tag.
+
 ### Explicit Architecture Tags
 
 These tags will explicitly pull the image for the listed architecture and are bit for bit identical to the multi-arch tags images.
