@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: For feature request related to this Docker image only.  For Samba features, use the 'samba-technical' mailing list
 title: ''
 labels: ''
 assignees: mbentley
