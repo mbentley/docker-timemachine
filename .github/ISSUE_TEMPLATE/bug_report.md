@@ -1,9 +1,9 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: For problems using this Docker image or found a bug in this Docker image?  Start here.
 title: ''
 labels: ''
-assignees: mbentley
+assignees:
 
 ---
 
@@ -28,7 +28,7 @@ docker run ...
 ```
 
 **Container Logs**
-<!-- Collect logs by using something similar to `docker logs timemachine >& output.log` if needed and attach them or copy out the relevant portions of the error.  When in doubt, do both -->
+<!-- Collect logs by using something similar to `docker logs timemachine >& output.log` if needed and attach them or copy out the relevant portions of the error.  When in doubt, do both.  I can't help without logs! -->
 
 ```
 logs

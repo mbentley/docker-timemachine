@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Samba mailing list
+    url: https://www.samba.org/samba/archives.html
+    about: For questions or issues related to Samba, use the `samba` mailing list.
