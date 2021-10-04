@@ -244,23 +244,34 @@ then
 
   # write avahi config file (smbd.service) to customize services advertised
   echo "INFO: Avahi - generating base configuration in /etc/avahi/services/smbd.service..."
+  SERVICE_NAME="%h"
+  HOSTNAME_XML=""
+  if [ -n "$ADVERTISED_HOSTNAME" ]
+  then
+    echo "INFO: Avahi - using $ADVERTISED_HOSTNAME as hostname."
+    SERVICE_NAME="${ADVERTISED_HOSTNAME}"
+    HOSTNAME_XML="<host-name>${ADVERTISED_HOSTNAME}.local</host-name>"
+  fi
   echo "<?xml version=\"1.0\" standalone='no'?><!--*-nxml-*-->
 <!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">
 
 <service-group>
-  <name replace-wildcards=\"yes\">%h</name>
+  <name replace-wildcards=\"yes\">${SERVICE_NAME}</name>
   <service>
     <type>_smb._tcp</type>
     <port>${SMB_PORT}</port>
+    ${HOSTNAME_XML}
   </service>
   <service>
     <type>_device-info._tcp</type>
     <port>9</port>
-  <txt-record>model=${MIMIC_MODEL}</txt-record>
+    ${HOSTNAME_XML}
+    <txt-record>model=${MIMIC_MODEL}</txt-record>
   </service>
   <service>
     <type>_adisk._tcp</type>
     <port>9</port>
+    ${HOSTNAME_XML}
     <txt-record>sys=adVF=0x100</txt-record>" > /etc/avahi/services/smbd.service
 
   # check to see if we should create one or many users

@@ -46,6 +46,7 @@ Example usage with `--net=host` to allow Avahi discovery; all available environm
 docker run -d --restart=always \
   --name timemachine \
   --net=host \
+  -e ADVERTISED_HOSTNAME="" \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
   -e DEBUG_LEVEL="1" \
@@ -83,6 +84,7 @@ docker run -d --restart=always \
   -p 138:138/udp \
   -p 139:139 \
   -p 445:445 \
+  -e ADVERTISED_HOSTNAME="" \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
   -e DEBUG_LEVEL="1" \
@@ -139,6 +141,9 @@ This issue has been observed on Raspberry Pi OS (formerly known as Raspbian) bas
 #### Conflicts with Samba and/or Avahi on the Host
 
 __Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container.
+
+If your host is running Avahi, you can configure it to act as a reflector, and the container advertisements will be broadcast to your host network without using `--net=host`. To do this, edit the avahi config (`/etc/avahi/avahi-daemon.conf`) on the host and set `enable-reflector=yes`. Then set the `ADVERTISED_HOSTNAME` environment variable in your container config to the mDNS hostname of your host, *without* the `.local` suffix.
+
 As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
 
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.1.0/24`, the default gateway is `192.168.1.1`, and `eth0` for the host's network interface):
@@ -201,6 +206,7 @@ Default credentials:
 
 | Variable | Default | Description |
 | :------- | :------ | :---------- |
+| `ADVERTISED_HOSTNAME` | _not set_ | Avahi will advertise the smb services at this hostname instead of the local hostname (useful in Docker without `--net=host`) |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
 | `DEBUG_LEVEL` | `1` | sets the debug level for `nmbd` and `smbd` |
@@ -252,6 +258,7 @@ __Note__: You will need to either bind mount `/opt` or each `SHARE_NAME` directo
 docker run -d --restart=always \
   --name timemachine \
   --net=host \
+  -e ADVERTISED_HOSTNAME="" \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
   -e DEBUG_LEVEL="1" \
