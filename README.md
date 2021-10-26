@@ -132,8 +132,8 @@ This is due to an issue with the `libseccomp2` package.  You have two options:
 1. Install a backported version of `libseccomp2`:
 
    ```
-   wget http://ftp.us.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.4.4-1~bpo10+1_armhf.deb
-   sudo dpkg -i libseccomp2_2.4.4-1~bpo10+1_armhf.deb
+   wget http://ftp.us.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.5.1-1~bpo10+1_armhf.deb
+   sudo dpkg -i libseccomp2_2.5.1-1~bpo10+1_armhf.deb
    ```
 
 This issue has been observed on Raspberry Pi OS (formerly known as Raspbian) based on Debian 10 (Buster) but may also be found on other distros as they may commonly use the `libseccomp2` package version `2.3.3-4`.
