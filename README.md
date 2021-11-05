@@ -40,6 +40,7 @@ To pull this image:
 
 ## Example usage for SMB
 
+
 Example usage with `--net=host` to allow Avahi discovery; all available environment variables set to their default values:
 
 ```
@@ -111,6 +112,11 @@ docker run -d --restart=always \
   -v timemachine-run-samba:/run/samba \
   mbentley/timemachine:smb
 ```
+
+
+### Kubernetes support
+The images are also compatible with Kubernetes.
+Checkout [timemachine-k3s.yaml](https://github.com/mbentley/docker-timemachine/blob/master/timemachine-k3s.yaml) as an example for running a TimeMachine backup server on a single-node [k3s](https://k3s.io) cluster running (on a Raspberry Pi 4).
 
 ### Tips for Automatic Discovery w/Avahi
 

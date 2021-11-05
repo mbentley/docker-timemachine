@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: timemachine
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-path-retain
+provisioner: rancher.io/local-path
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timemachine-udp
+  namespace: timemachine
+  labels:
+    app: timemachine
+spec:
+  ports:
+  - port: 137
+    name: udp137
+    protocol: UDP
+  - port: 138
+    name: udp138
+    protocol: UDP
+  type: ClusterIP
+  selector:
+    app: timemachine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timemachine-tcp
+  namespace: timemachine
+  labels:
+    app: timemachine
+spec:
+  ports:
+  - port: 139
+    name: tcp139
+  - port: 445
+    name: tcp445
+  type: ClusterIP
+  selector:
+    app: timemachine
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: timemachine
+  namespace: timemachine
+spec:
+  serviceName: timemachine-udp
+  replicas: 1 # Never go > 1!
+  selector:
+    matchLabels:
+      app: timemachine
+  template:
+    metadata:
+      labels:
+        app: timemachine
+    spec:
+      hostNetwork: true # otherwise the auto-discovery does not work
+      containers:
+      - name: timemachine
+        image: mbentley/timemachine:smb
+        ports:
+        - containerPort: 137
+          name: udp137
+          protocol: UDP
+        - containerPort: 138
+          name: udp138
+          protocol: UDP
+        - containerPort: 139
+          name: tcp139
+        - containerPort: 445
+          name: tcp445
+        volumeMounts:
+        - name: tm
+          mountPath: /opt/timemachine
+        - name: var-lib-samba
+          mountPath: /var/lib/samba
+        - name: var-cache-samba
+          mountPath: /var/cache/samba
+        - name: run-samba
+          mountPath: /run/samba
+        env:
+        - name: ADVERTISED_HOSTNAME
+          value: ""
+        - name: CUSTOM_SMB_CONF
+          value: "false"
+        - name: CUSTOM_USER
+          value: "false"
+        - name: DEBUG_LEVEL
+          value: "1"
+        - name: MIMIC_MODEL
+          value: "TimeCapsule8,119"
+        - name: EXTERNAL_CONF
+          value: ""
+        - name: HIDE_SHARES
+          value: "no"
+        - name: TM_USERNAME
+          value: "timemachine"
+        - name: TM_GROUPNAME
+          value: "timemachine"
+        - name: TM_UID
+          value: "1000"
+        - name: TM_GID
+          value: "1000"
+        - name: PASSWORD
+          value: "timemachine"
+        - name: SET_PERMISSIONS
+          value: "false"
+        - name: SHARE_NAME
+          value: "TimeMachine"
+        - name: SMB_INHERIT_PERMISSIONS
+          value: "no"
+        - name: SMB_NFS_ACES
+          value: "yes"
+        - name: SMB_METADATA
+          value: "stream"
+        - name: SMB_PORT
+          value: "445"
+        - name: SMB_VFS_OBJECTS
+          value: "acl_xattr fruit streams_xattr"
+        - name: VOLUME_SIZE_LIMIT
+          value: "0"
+        - name: WORKGROUP
+          value: "WORKGROUP"
+      volumes:
+      - name: var-lib-samba
+        emptyDir: {}
+      - name: var-cache-samba
+        emptyDir: {}
+      - name: run-samba
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: tm
+    spec:
+      storageClassName: local-path-retain
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 500Gi
