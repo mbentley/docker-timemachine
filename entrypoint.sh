@@ -234,6 +234,7 @@ then
    fruit:metadata = ${SMB_METADATA}
    fruit:veto_appledouble = no
    fruit:posix_rename = yes
+   fruit:zero_file_id = yes
    fruit:wipe_intentionally_left_blank_rfork = yes
    fruit:delete_empty_adfiles = yes" > /etc/samba/smb.conf
   fi
@@ -246,9 +247,9 @@ then
   echo "INFO: Avahi - generating base configuration in /etc/avahi/services/smbd.service..."
   SERVICE_NAME="%h"
   HOSTNAME_XML=""
-  if [ -n "$ADVERTISED_HOSTNAME" ]
+  if [ -n "${ADVERTISED_HOSTNAME}" ]
   then
-    echo "INFO: Avahi - using $ADVERTISED_HOSTNAME as hostname."
+    echo "INFO: Avahi - using ${ADVERTISED_HOSTNAME} as hostname."
     SERVICE_NAME="${ADVERTISED_HOSTNAME}"
     HOSTNAME_XML="<host-name>${ADVERTISED_HOSTNAME}.local</host-name>"
   fi
