@@ -23,7 +23,8 @@ These tags will explicitly pull the image for the listed architecture and are bi
 #### [`amd64`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=amd64)
 
 * `latest-smb-amd64`, `smb-amd64` - SMB image based off of alpine:latest
-* `afp`, `afp-amd64` - AFP image based off of debian:jessie _(deprecated but still available)_
+* `afp`, `afp-amd64` - AFP image based off of debian:jessie
+  * Deprecated but still available; not being regularly built - **This image may have unpatched security vulnerabilities**
 
 #### [`armv7l`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=armv7l)
 
