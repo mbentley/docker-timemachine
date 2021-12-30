@@ -322,7 +322,7 @@ then
 </service-group>" >> /etc/avahi/services/smbd.service
 
   # cleanup PID files
-  for PIDFILE in nmbd smbd
+  for PIDFILE in nmbd samba-bgqd smbd
   do
     if [ -f /run/samba/${PIDFILE}.pid ]
     then
@@ -332,10 +332,10 @@ then
   done
 
   # cleanup dbus PID file
-  if [ -f /run/dbus.pid ]
+  if [ -f /run/dbus/dbus.pid ]
   then
     echo "INFO: dbus PID exists; removing..."
-    rm -v /run/dbus.pid
+    rm -v /run/dbus/dbus.pid
   fi
 
   # cleanup avahi PID file
