@@ -149,7 +149,12 @@ This issue has been observed on Raspberry Pi OS (formerly known as Raspbian) bas
 
 __Note__: If you are already running Samba/Avahi on your Docker host (or you're wanting to run this on your NAS), you should be aware that using `--net=host` will cause a conflict with the Samba/Avahi install. Raspberry Pi users: be aware that there is already an mDNS responder running on the stock Raspberry Pi OS image that will conflict with the mDNS responder in the container.
 
-If your host is running Avahi, you can configure it to act as a reflector, and the container advertisements will be broadcast to your host network without using `--net=host`. To do this, edit the avahi config (`/etc/avahi/avahi-daemon.conf`) on the host and set `enable-reflector=yes`. Then set the `ADVERTISED_HOSTNAME` environment variable in your container config to the mDNS hostname of your host, *without* the `.local` suffix.
+If your host is running Avahi, you can configure it to act as a reflector, and the container advertisements will be broadcast to your host network without using `--net=host`. To do this, edit the avahi config (`/etc/avahi/avahi-daemon.conf`) on the host:
+
+* set `enable-reflector=yes`
+* set `cache-entries-max=0` - this prevents issues with Apple devices reporting duplicate names and adding/incrementing numbers in their name (references: <https://blogs.thismonkey.com/?p=33> and <https://community.ui.com/questions/mdns-reflector-help-computer-name-keeps-changing/180dd51f-a5b2-465c-88c2-6e85ab03c38a#answer/4732ed77-37aa-4f30-b992-cf99752e4f6a>)
+
+Then set the `ADVERTISED_HOSTNAME` environment variable in your container config to the mDNS hostname of your host, *without* the `.local` suffix.
 
 As an alternative, you can use the [`macvlan` driver in Docker](https://docs.docker.com/network/macvlan/) which will allow you to map a static IP address to your container.  If you have issues setting up Time Machine with the configuration, feel free to open an issue and I can assist - this is how I persoanlly run time machine.
 
