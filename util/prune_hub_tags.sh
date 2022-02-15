@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# set namespace & repository name
+IMAGE_REPO="mbentley/timemachine"
+
 # get the date, in seconds, for when we should purge tags before
 PURGE_DATE="$(date --date='-6 months' +%s)"
 
@@ -30,7 +33,7 @@ NEXT_PAGE=""
 while [ "${NEXT_PAGE}" != "null" ]
 do
   # get a page of tags
-  PAGE_OF_TAGS="$(curl -s -H "Authorization: JWT ${TOKEN}" "https://hub.docker.com/v2/repositories/mbentley/timemachine/tags?page=${TAG_PAGE}&page_size=50")"
+  PAGE_OF_TAGS="$(curl -s -H "Authorization: JWT ${TOKEN}" "https://hub.docker.com/v2/repositories/${IMAGE_REPO}/tags?page=${TAG_PAGE}&page_size=50")"
 
   # set the next page variable
   NEXT_PAGE="$(echo "${PAGE_OF_TAGS}" | jq -r .next)"
@@ -63,7 +66,7 @@ do
       echo "tag age $(date -d "@${TAG_LAST_PUSHED}" +%Y-%m-%d), threshold $(date -d "@${PURGE_DATE}" +%Y-%m-%d), ${TAG_NAME}, removing"
 
       # delete the tag
-      curl -H "Authorization: JWT ${TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/mbentley/timemachine/tags/${TAG_NAME}/"
+      curl -s -H "Authorization: JWT ${TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/${IMAGE_REPO}/tags/${TAG_NAME}/"
     else
       # do not purge tag
       echo "tag age $(date -d "@${TAG_LAST_PUSHED}" +%Y-%m-%d), threshold $(date -d "@${PURGE_DATE}" +%Y-%m-%d), ${TAG_NAME}, NOT removing"
