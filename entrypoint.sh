@@ -10,8 +10,6 @@ SMB_PORT="${SMB_PORT:-445}"
 CUSTOM_USER="${CUSTOM_USER:-false}"
 TM_USERNAME="${TM_USERNAME:-timemachine}"
 TM_GROUPNAME="${TM_GROUPNAME:-timemachine}"
-TM_UID="${TM_UID:-1000}"
-TM_GID="${TM_GID:-${TM_UID}}"
 VOLUME_SIZE_LIMIT="${VOLUME_SIZE_LIMIT:-0}"
 WORKGROUP="${WORKGROUP:-WORKGROUP}"
 EXTERNAL_CONF="${EXTERNAL_CONF:-}"
@@ -20,6 +18,13 @@ SMB_VFS_OBJECTS="${SMB_VFS_OBJECTS:-acl_xattr fruit streams_xattr}"
 SMB_INHERIT_PERMISSIONS="${SMB_INHERIT_PERMISSIONS:-no}"
 SMB_NFS_ACES="${SMB_NFS_ACES:-yes}"
 SMB_METADATA="${SMB_METADATA:-stream}"
+
+# support both PUID/TM_UID and PGID/TM_GID
+PUID="${PUID:-1000}"
+PGID="${PGID:-${PUID}}"
+TM_UID="${TM_UID:-${PUID}}"
+TM_GID="${TM_GID:-${PGID:-${TM_UID}}}"
+
 
 # common functions
 password_var_or_file() {
