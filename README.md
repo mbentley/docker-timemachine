@@ -219,7 +219,9 @@ Default credentials:
 | Variable | Default | Description |
 | :------- | :------ | :---------- |
 | `ADVERTISED_HOSTNAME` | _not set_ | Avahi will advertise the smb services at this hostname instead of the local hostname (useful in Docker without `--net=host`) |
+| `CUSTOM_SMB_AUTH` | `no` | set to yes, indicates that you want Samba to attempt to authenticate users using the [NTLM Encrypted Password Response](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html#idm7319) |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
+| `CUSTOM_SMB_PROTO` | `SMB2` | indicates that you want to allow another value from [Samba Protocol List](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html#CLIENTMAXPROTOCOL) |
 | `CUSTOM_USER` | `false` | indicates that you are going to bind mount `/etc/password`, `/etc/group`, and `/etc/shadow`; and create data directories if set to `true` |
 | `DEBUG_LEVEL` | `1` | sets the debug level for `nmbd` and `smbd` |
 | `EXTERNAL_CONF` | _not set_ | specifies a directory in which individual variable files, ending in `.conf`, for multiple users; see [Adding Multiple Users & Shares](#adding-multiple-users--shares) for more info |
