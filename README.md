@@ -125,6 +125,11 @@ This works best with `--net=host` so that discovery can be broadcast.  Otherwise
 
 ### Known Issues
 
+#### Processes fail to start; container has high CPU usage
+
+If the container isn't starting and you're seeing logs like `Failed to start message bus: Failed to bind socket`, and possibly have other symptoms like seeing high CPU usage from the container, it could be that your are hitting the `nofile` ulimit. Make sure your compose file or `docker run` command have the `nofile` ulimits adjusted to increase the defaults. Check the examples in the README or the example compose files in this repository.
+
+
 #### Unable to start the `armv7l` image
 
 If you are running the `armv7l` image, you may see and error when trying to start the container:
@@ -272,6 +277,7 @@ __Note__: You will need to either bind mount `/opt` or each `SHARE_NAME` directo
 docker run -d --restart=always \
   --name timemachine \
   --net=host \
+  --ulimit nofile=65536:65536 \
   -e ADVERTISED_HOSTNAME="" \
   -e CUSTOM_SMB_CONF="false" \
   -e CUSTOM_USER="false" \
