@@ -96,6 +96,7 @@ createdir() {
 }
 
 create_smb_user() {
+  password_var_or_file
   # validate that none of the required environment variables are empty
   if [ -z "${TM_USERNAME}" ] || [ -z "${TM_GROUPNAME}" ] || [ -z "${PASSWORD}" ] || [ -z "${SHARE_NAME}" ] || [ -z "${TM_UID}" ] || [ -z "${TM_GID}" ]
   then
