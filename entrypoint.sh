@@ -96,7 +96,10 @@ createdir() {
 }
 
 create_smb_user() {
-  password_var_or_file
+  # TODO: this has been disabled as it breaks functionality (https://github.com/mbentley/docker-timemachine/issues/137)
+  #   Need to re-implement what is being asked in https://github.com/mbentley/docker-timemachine/issues/137
+  #password_var_or_file
+
   # validate that none of the required environment variables are empty
   if [ -z "${TM_USERNAME}" ] || [ -z "${TM_GROUPNAME}" ] || [ -z "${PASSWORD}" ] || [ -z "${SHARE_NAME}" ] || [ -z "${TM_UID}" ] || [ -z "${TM_GID}" ]
   then
