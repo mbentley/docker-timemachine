@@ -96,10 +96,6 @@ createdir() {
 }
 
 create_smb_user() {
-  # TODO: this has been disabled as it breaks functionality (https://github.com/mbentley/docker-timemachine/issues/137)
-  #   Need to re-implement what is being asked in https://github.com/mbentley/docker-timemachine/issues/137
-  #password_var_or_file
-
   # validate that none of the required environment variables are empty
   if [ -z "${TM_USERNAME}" ] || [ -z "${TM_GROUPNAME}" ] || [ -z "${PASSWORD}" ] || [ -z "${SHARE_NAME}" ] || [ -z "${TM_UID}" ] || [ -z "${TM_GID}" ]
   then
@@ -316,6 +312,13 @@ then
 
       # write the individual share info for avahi discovery
       write_avahi_adisk_service "${DK_NUMBER}" "${SHARE_NAME}"
+
+      # check to see if we are using a password file
+      if [ -n "${PASSWORD_FILE}" ]
+      then
+        # cat the password file to save the contents to the env var
+        PASSWORD=$(cat "${PASSWORD_FILE}")
+      fi
 
       # create the user with the specified values
       create_smb_user
