@@ -63,7 +63,7 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
-  -e SMB_NFS_ACES="yes" \
+  -e SMB_NFS_ACES="no" \
   -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
@@ -101,7 +101,7 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
-  -e SMB_NFS_ACES="yes" \
+  -e SMB_NFS_ACES="no" \
   -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
@@ -240,7 +240,7 @@ Default credentials:
 | `SET_PERMISSIONS` | `false` | set to `true` to have the entrypoint set ownership and permission on the `/opt/<username>` in the container |
 | `SHARE_NAME` | `TimeMachine` | sets the name of the timemachine share to TimeMachine by default |
 | `SMB_INHERIT_PERMISSIONS` | `no` | if yes, permissions for new files will be forced to match the parent folder |
-| `SMB_NFS_ACES` | `yes` | value of `fruit:nfs_aces`; support for querying and modifying the UNIX mode of directory entries via NFS ACEs |
+| `SMB_NFS_ACES` | `no` | value of `fruit:nfs_aces`; support for querying and modifying the UNIX mode of directory entries via NFS ACEs |
 | `SMB_METADATA` | `stream` | value of `fruit:metadata`; controls where the OS X metadata stream is stored |
 | `SMB_PORT` | `445` | sets the port that Samba will be available on |
 | `SMB_VFS_OBJECTS` | `acl_xattr fruit streams_xattr` | value of `vfs objects` |
@@ -293,7 +293,7 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e SHARE_NAME="TimeMachine" \
   -e SMB_INHERIT_PERMISSIONS="no" \
-  -e SMB_NFS_ACES="yes" \
+  -e SMB_NFS_ACES="no" \
   -e SMB_METADATA="stream" \
   -e SMB_PORT="445" \
   -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
