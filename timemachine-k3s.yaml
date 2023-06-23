@@ -119,7 +119,7 @@ spec:
         - name: SMB_INHERIT_PERMISSIONS
           value: "no"
         - name: SMB_NFS_ACES
-          value: "yes"
+          value: "no"
         - name: SMB_METADATA
           value: "stream"
         - name: SMB_PORT
