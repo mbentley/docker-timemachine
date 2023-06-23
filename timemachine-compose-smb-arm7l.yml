@@ -21,7 +21,7 @@ services:
       - SET_PERMISSIONS=false
       - SHARE_NAME=TimeMachine
       - SMB_INHERIT_PERMISSIONS=no
-      - SMB_NFS_ACES=yes
+      - SMB_NFS_ACES=no
       - SMB_METADATA=stream
       - SMB_PORT=445
       - SMB_VFS_OBJECTS=acl_xattr fruit streams_xattr
