@@ -472,10 +472,10 @@ then
   TEST_PATH="$({ grep -m 1 "path =" < /etc/samba/smb.conf | awk '{print $3}' ; } 2>/dev/null)"
   if [ -z "${TEST_PATH}" ]
   then
-    echo "WARNING: unable to get test path from smb.conf; unable to test for xattr support"
+    echo "WARN: unable to get test path from smb.conf; unable to test for xattr support"
   else
     # execute test by touching a file and trying to set xattrs to the file, capture the result, and remove the test file
-    touch "${TEST_PATH}/xattr-test" || echo "WARNING: unable to write test file (is your persistent storage location read only or an invalid path?)"
+    touch "${TEST_PATH}/xattr-test" || echo "WARN: unable to write test file (is your persistent storage location read only or an invalid path?)"
     TEST_RESULT="$(setfattr -n user.test -v "hello" "${TEST_PATH}/xattr-test" >/dev/null 2>&1; echo $?)"
     rm -f "${TEST_PATH}/xattr-test"
 
@@ -484,7 +484,7 @@ then
     then
       echo "INFO: xattr test successful - your persistent data store supports xattrs"
     else
-      echo "WARNING: xattr test failure - unable to set xattrs on your persistent data store. Time machine backups may fail!"
+      echo "WARN: xattr test failure - unable to set xattrs on your persistent data store. Time machine backups may fail!"
     fi
   fi
 fi
@@ -493,7 +493,16 @@ fi
 for DIR in /opt/*
 do
   DETECTED_FS="$(df -TP "${DIR}" | grep -v ^Filesystem | awk '{print $2}')"
-  echo "INFO: Detected filesystem for ${DIR} is ${DETECTED_FS}"
+
+  # output based on detected fs
+  case ${DETECTED_FS} in
+    overlay)
+      echo "WARN: Detected filesystem for ${DIR} is ${DETECTED_FS}! This likely means that your data is being stored inside the container, not in a volume! See https://github.com/mbentley/docker-timemachine#persistent-data-path"
+      ;;
+    *)
+      echo "INFO: Detected filesystem for ${DIR} is ${DETECTED_FS}"
+      ;;
+  esac
 done
 
 # run CMD
