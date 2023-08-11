@@ -212,9 +212,11 @@ If you're using an external volume like in the example above, you will need to s
 
 The backing data store for your persistent time machine data _must_ support extended file attributes (`xattr`).  Remote file systems, such as NFS, will very likely not support `xattr`s.  See [#61](https://github.com/mbentley/docker-timemachine/issues/61) for more details.  This image will check and try to set `xattr`s to a test file in `/opt/${TM_USERNAME}` to warn the user if they are not supported but this will not prevent the image from running.
 
-Also note that if you change the `TM_USERNAME` value that it will change the data path from `/opt/timemachine` to `/opt/<value-of-TM_USERNAME>`.
+#### Persistent Data Path
 
-Default credentials:
+If you change the `TM_USERNAME` value, it will change the persistent data path from `/opt/timemachine` to `/opt/<value-of-TM_USERNAME>`. Failure to map this appropriately will lead to data being stored inside the container and not in the volume you have specified!
+
+#### Default credentials
 
 * Username: `timemachine`
 * Password: `timemachine`
