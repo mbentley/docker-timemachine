@@ -1,0 +1,24 @@
+# rebased/repackaged base image that only updates existing packages
+FROM mbentley/debian:bookworm
+LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# install samba and s6; create supporting directories
+RUN apt-get update &&\
+  apt-get install -y --no-install-recommends attr avahi-daemon ca-certificates libavahi-compat-libdnssd1 avahi-utils dbus samba-common-bin s6 samba samba-vfs-modules &&\
+  rm /etc/samba/smb.conf &&\
+  mkdir /var/run/dbus &&\
+  rm -rf /var/lib/apt/lists/*
+
+#  touch /etc/samba/lmhosts &&\ # might need this
+#  rm /etc/avahi/services/*.service &&\ # doesn't seem to need this
+
+# copy in necessary supporting config files
+COPY s6 /etc/s6
+COPY entrypoint.sh /
+
+VOLUME ["/var/lib/samba","/var/cache/samba","/run/samba"]
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["s6-svscan","/etc/s6"]

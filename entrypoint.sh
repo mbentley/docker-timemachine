@@ -127,7 +127,7 @@ create_smb_user() {
       else
         echo "INFO: Group ${TM_GROUPNAME} doesn't exist; creating..."
         # create the group
-        addgroup -g "${TM_GID}" "${TM_GROUPNAME}"
+        addgroup --gid "${TM_GID}" "${TM_GROUPNAME}"
       fi
     fi
     # check to see if user exists; if not, create it
@@ -137,7 +137,8 @@ create_smb_user() {
     else
       echo "INFO: User ${TM_USERNAME} doesn't exist; creating..."
       # create the user
-      adduser -u "${TM_UID}" -G "${TM_GROUPNAME}" -h "/opt/${TM_USERNAME}" -s /bin/false -D "${TM_USERNAME}"
+      #adduser -u "${TM_UID}" -G "${TM_GROUPNAME}" -h "/opt/${TM_USERNAME}" -s /bin/false -D "${TM_USERNAME}"
+      useradd -u "${TM_UID}" -g "${TM_GROUPNAME}" -d "/opt/${TM_USERNAME}" -s /bin/false "${TM_USERNAME}"
 
       # set the user's password if necessary
       set_password
@@ -208,11 +209,10 @@ write_avahi_adisk_service() {
 # check to see if the password should be set from a file (secret) or env var
 password_var_or_file
 
-# check to see if if we are using the alpine or debian base images (debian version uses AFP; alpine uses SMB)
-#   this is needed because of differences in syntax for adding groups and users
+# check to see if netatalk version is set (this is only present for the legacy afp version)
 if [ -z "${NETATALK_VERSION}" ]
 then
-  # this is the SMB version running alpine
+  # this is the SMB version
 
   # set default version for timecapsule w/SMB
   MIMIC_MODEL="${MIMIC_MODEL:-TimeCapsule8,119}"
