@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # install samba and s6; create supporting directories
 RUN apt-get update &&\
-  apt-get install -y --no-install-recommends attr avahi-daemon ca-certificates libavahi-compat-libdnssd1 avahi-utils dbus samba-common-bin s6 samba samba-vfs-modules &&\
+  apt-get install -y --no-install-recommends attr avahi-daemon avahi-utils ca-certificates dbus libavahi-compat-libdnssd1 libnss-mdns s6 samba samba-common-bin samba-vfs-modules &&\
   touch /etc/samba/lmhosts &&\
   rm /etc/samba/smb.conf &&\
   mkdir /var/run/dbus &&\
