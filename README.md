@@ -24,7 +24,7 @@ These tags will explicitly pull the image for the listed architecture and are bi
 
 * `latest-smb-amd64`, `smb-amd64` - SMB image based off of alpine:latest
 * `afp`, `afp-amd64` - AFP image based off of debian:jessie
-  * Deprecated but still available; not being regularly built - **This image may have unpatched security vulnerabilities**
+    * Deprecated but still available; not being regularly built - **This image may have unpatched security vulnerabilities**
 
 #### [`armv7l`](https://hub.docker.com/repository/docker/mbentley/timemachine/tags?page=1&ordering=last_updated&name=armv7l)
 
@@ -41,34 +41,19 @@ To pull this image:
 
 ## Example usage for SMB
 
-
-Example usage with `--net=host` to allow Avahi discovery; all available environment variables set to their default values:
+Example usage with `--net=host` to allow Avahi discovery; with commonly used environment variables set to their default values:
 
 ```
 docker run -d --restart=always \
   --name timemachine \
   --net=host \
-  -e ADVERTISED_HOSTNAME="" \
-  -e CUSTOM_SMB_CONF="false" \
-  -e CUSTOM_USER="false" \
-  -e DEBUG_LEVEL="1" \
-  -e MIMIC_MODEL="TimeCapsule8,119" \
-  -e EXTERNAL_CONF="" \
-  -e HIDE_SHARES="no" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
+  -e PASSWORD="timemachine" \
   -e TM_UID="1000" \
   -e TM_GID="1000" \
-  -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
-  -e SHARE_NAME="TimeMachine" \
-  -e SMB_INHERIT_PERMISSIONS="no" \
-  -e SMB_NFS_ACES="no" \
-  -e SMB_METADATA="stream" \
-  -e SMB_PORT="445" \
-  -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
-  -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
@@ -76,7 +61,7 @@ docker run -d --restart=always \
   mbentley/timemachine:smb
 ```
 
-Example usage with exposing ports _without_ Avahi discovery; all available environment variables set to their default values:
+Example usage with exposing ports _without_ Avahi discovery; with commonly used environment variables set to their default values:
 
 ```
 docker run -d --restart=always \
@@ -86,27 +71,13 @@ docker run -d --restart=always \
   -p 138:138/udp \
   -p 139:139 \
   -p 445:445 \
-  -e ADVERTISED_HOSTNAME="" \
-  -e CUSTOM_SMB_CONF="false" \
-  -e CUSTOM_USER="false" \
-  -e DEBUG_LEVEL="1" \
-  -e HIDE_SHARES="no" \
-  -e EXTERNAL_CONF="" \
-  -e MIMIC_MODEL="TimeCapsule8,119" \
   -e TM_USERNAME="timemachine" \
   -e TM_GROUPNAME="timemachine" \
+  -e PASSWORD="timemachine" \
   -e TM_UID="1000" \
   -e TM_GID="1000" \
-  -e PASSWORD="timemachine" \
   -e SET_PERMISSIONS="false" \
-  -e SHARE_NAME="TimeMachine" \
-  -e SMB_INHERIT_PERMISSIONS="no" \
-  -e SMB_NFS_ACES="no" \
-  -e SMB_METADATA="stream" \
-  -e SMB_PORT="445" \
-  -e SMB_VFS_OBJECTS="acl_xattr fruit streams_xattr" \
   -e VOLUME_SIZE_LIMIT="0" \
-  -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
   -v timemachine-var-lib-samba:/var/lib/samba \
   -v timemachine-var-cache-samba:/var/cache/samba \
@@ -114,8 +85,8 @@ docker run -d --restart=always \
   mbentley/timemachine:smb
 ```
 
-
 ### Kubernetes support
+
 The images are also compatible with Kubernetes.
 Checkout [timemachine-k3s.yaml](https://github.com/mbentley/docker-timemachine/blob/master/timemachine-k3s.yaml) as an example for running a TimeMachine backup server on a single-node [k3s](https://k3s.io) cluster running (on a Raspberry Pi 4).
 
@@ -128,7 +99,6 @@ This works best with `--net=host` so that discovery can be broadcast.  Otherwise
 #### Processes fail to start; container has high CPU usage
 
 If the container isn't starting and you're seeing logs like `Failed to start message bus: Failed to bind socket`, and possibly have other symptoms like seeing high CPU usage from the container, it could be that your are hitting the `nofile` ulimit. Make sure your compose file or `docker run` command have the `nofile` ulimits adjusted to increase the defaults. Check the examples in the README or the example compose files in this repository.
-
 
 #### Unable to start the `armv7l` image
 
@@ -165,13 +135,13 @@ As an alternative, you can use the [`macvlan` driver in Docker](https://docs.doc
 
 1. Create a `macvlan` Docker network (assuming your local subnet is `192.168.1.0/24`, the default gateway is `192.168.1.1`, and `eth0` for the host's network interface):
 
-  ``` bash
+  ```bash
   docker network create -d macvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o parent=eth0 macvlan1
   ```
 
   On devices such as Synology DSM, the primary network interface may be `ovs_eth0` due to the usage of Open vSwitch.  If you are unsure of your primary network interface, this command may help:
 
-  ``` bash
+  ```bash
   $ route | grep ^default | awk '{print $NF}'
   eth0
   ```
@@ -346,7 +316,7 @@ secrets:
 ## Example docker-compose usage for AFP
 
 ```
-docker-compose -f timemachine-compose.yml up -d
+docker compose -f timemachine-compose.yml up -d
 ```
 
 ## Example `docker run` usage for AFP
