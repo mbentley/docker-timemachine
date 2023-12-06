@@ -225,7 +225,7 @@ If you change the `TM_USERNAME` value, it will change the persistent data path f
 
 | Variable | Default | Description |
 | :------- | :------ | :---------- |
-| `ADVERTISED_HOSTNAME` | _not set_ | Avahi will advertise the smb services at this hostname instead of the local hostname (useful in Docker without `--net=host`) |
+| `ADVERTISED_HOSTNAME` | _not set_ | Avahi will advertise the smb services at this hostname instead of the local hostname (useful in Docker without `--net=host`). **Do not set this if you don't know what you're doing!** |
 | `CUSTOM_SMB_AUTH` | `no` | set to yes, indicates that you want Samba to attempt to authenticate users using the [NTLM Encrypted Password Response](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html#idm7319) |
 | `CUSTOM_SMB_CONF` | `false` | indicates that you are going to bind mount a custom config to `/etc/samba/smb.conf` if set to `true` |
 | `CUSTOM_SMB_PROTO` | `SMB2` | indicates that you want to allow another value from [Samba Protocol List](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html#CLIENTMAXPROTOCOL) |
