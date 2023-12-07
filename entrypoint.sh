@@ -20,6 +20,7 @@ SMB_VFS_OBJECTS="${SMB_VFS_OBJECTS:-acl_xattr fruit streams_xattr}"
 SMB_INHERIT_PERMISSIONS="${SMB_INHERIT_PERMISSIONS:-no}"
 SMB_NFS_ACES="${SMB_NFS_ACES:-no}"
 SMB_METADATA="${SMB_METADATA:-stream}"
+SMB_STORE_DOS_ATTRIBUTES="${SMB_STORE_DOS_ATTRIBUTES:-yes}"
 
 # support both PUID/TM_UID and PGID/TM_GID
 PUID="${PUID:-1000}"
@@ -244,6 +245,7 @@ then
    fruit:posix_rename = yes
    fruit:zero_file_id = yes
    fruit:wipe_intentionally_left_blank_rfork = yes
+   store dos attributes = ${SMB_STORE_DOS_ATTRIBUTES}
    fruit:delete_empty_adfiles = yes" > /etc/samba/smb.conf
   fi
 
