@@ -249,7 +249,8 @@ then
   fi
   if [ "${IGNORE_DOS_ATTRIBUTES}" == "true" ]
   then
-    echo "store dos attributes = no
+    echo "
+   store dos attributes = no
    map hidden = no
    map system = no
    map archive = no
