@@ -218,7 +218,7 @@ If you change the `TM_USERNAME` value, it will change the persistent data path f
 | `SMB_VFS_OBJECTS` | `acl_xattr fruit streams_xattr` | value of `vfs objects` |
 | `VOLUME_SIZE_LIMIT` | `0` | sets the maximum size of the time machine backup; a unit can also be passed (e.g. - `1 T`). See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) under the `fruit:time machine max size` section for more details |
 | `WORKGROUP` | `WORKGROUP` | set the Samba workgroup name |
-| `SMB_STORE_DOS_ATTRIBUTES` | `false` | sets, in the `[global]` section, whether to store dos attributes. See the [Samba docs](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html#STOREDOSATTRIBUTES) under the `store dos attributes` section for more details |
+| `IGNORE_DOS_ATTRIBUTES` | `false` | If set to `true` Samba will ignore DOS attributes. |
 
 ### Adding Multiple Users & Shares
 
