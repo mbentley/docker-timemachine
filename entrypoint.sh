@@ -253,7 +253,7 @@ then
    map system = no
    map archive = no
    map readonly = no" >> /etc/samba/smb.conf
-    then
+    fi
 
   # mkdir if needed
   createdir /var/lib/samba/private 700
