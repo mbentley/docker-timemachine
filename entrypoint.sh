@@ -247,7 +247,7 @@ then
    fruit:wipe_intentionally_left_blank_rfork = yes
    fruit:delete_empty_adfiles = yes" > /etc/samba/smb.conf
   fi
-  if [ "${IGNORE_DOS_ATTRIBUTES}" == "true" ]
+  if [ "${IGNORE_DOS_ATTRIBUTES}" = "true" ]
   then
     echo "   store dos attributes = no
    map hidden = no
