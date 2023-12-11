@@ -55,9 +55,7 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e VOLUME_SIZE_LIMIT="0" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
-  -v timemachine-var-lib-samba:/var/lib/samba \
-  -v timemachine-var-cache-samba:/var/cache/samba \
-  -v timemachine-run-samba:/run/samba \
+  --tmpfs /run/samba \
   mbentley/timemachine:smb
 ```
 
@@ -79,9 +77,7 @@ docker run -d --restart=always \
   -e SET_PERMISSIONS="false" \
   -e VOLUME_SIZE_LIMIT="0" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt/timemachine \
-  -v timemachine-var-lib-samba:/var/lib/samba \
-  -v timemachine-var-cache-samba:/var/cache/samba \
-  -v timemachine-run-samba:/run/samba \
+  --tmpfs /run/samba \
   mbentley/timemachine:smb
 ```
 
@@ -272,10 +268,8 @@ docker run -d --restart=always \
   -e VOLUME_SIZE_LIMIT="0" \
   -e WORKGROUP="WORKGROUP" \
   -v /path/on/host/to/backup/to/for/timemachine:/opt \
-  -v timemachine-var-lib-samba:/var/lib/samba \
-  -v timemachine-var-cache-samba:/var/cache/samba \
-  -v timemachine-run-samba:/run/samba \
   -v /path/on/host/to/user/file/directory:/users \
+  --tmpfs /run/samba \
   mbentley/timemachine:smb
 ```
 

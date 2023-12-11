@@ -81,10 +81,6 @@ spec:
         volumeMounts:
         - name: tm
           mountPath: /opt/timemachine
-        - name: var-lib-samba
-          mountPath: /var/lib/samba
-        - name: var-cache-samba
-          mountPath: /var/cache/samba
         - name: run-samba
           mountPath: /run/samba
         env:
