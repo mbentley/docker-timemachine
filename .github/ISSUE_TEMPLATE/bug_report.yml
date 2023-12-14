@@ -1,6 +1,6 @@
 name: Bug Report
 description: For problems using this Docker image or found a bug in this Docker image?  Start here.
-title: '[Bug]: '
+title: '[Bug/Help]: '
 assignees:
   - mbentley
 body:
@@ -61,6 +61,19 @@ body:
       render: plain
     validations:
       required: true
+  - type: textarea
+    id: maclogs
+    attributes:
+      label: Time Machine client Logs
+      description: |
+        If you can run the container but backups fail, collect logs from the client by using something similar to `printf '\e[3J' && log show --predicate 'subsystem == "com.apple.TimeMachine"' --info --last 6h | grep -F 'eMac' | grep -Fv 'etat' | awk -F']' '{print substr($0,1,19), $NF}'`, adjusting the time from `6h` to something resonable to catch the error at least once and attach them.  I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: false
   - type: textarea
     id: additional
     attributes:
