@@ -17,17 +17,11 @@ services:
       - "139:139"
     volumes:
       - /path/to/your/timemachine/volume:/opt/timemachine
-      - timemachine-var-lib-samba:/var/lib/samba
-      - timemachine-var-cache-samba:/var/cache/samba
-      - timemachine-run-samba:/run/samba
+    tmpfs:
+      - /run/samba
     ulimits:
       nofile:
         soft: 65536
         hard: 65536
     container_name: timemachine
     image: mbentley/timemachine:smb
-
-volumes:
-  timemachine-var-lib-samba:
-  timemachine-var-cache-samba:
-  timemachine-run-samba:

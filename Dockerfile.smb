@@ -13,7 +13,7 @@ RUN apk add --no-cache attr avahi avahi-compat-libdns_sd avahi-tools dbus samba-
 COPY s6 /etc/s6
 COPY entrypoint.sh /
 
-VOLUME ["/var/lib/samba","/var/cache/samba","/run/samba"]
+#VOLUME ["/var/lib/samba","/var/cache/samba","/run/samba"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["s6-svscan","/etc/s6"]
