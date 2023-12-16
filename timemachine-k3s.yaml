@@ -121,7 +121,7 @@ spec:
         - name: SMB_PORT
           value: "445"
         - name: SMB_VFS_OBJECTS
-          value: "acl_xattr fruit streams_xattr"
+          value: "fruit streams_xattr"
         - name: VOLUME_SIZE_LIMIT
           value: "0"
         - name: WORKGROUP
