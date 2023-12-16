@@ -20,6 +20,7 @@ SMB_VFS_OBJECTS="${SMB_VFS_OBJECTS:-acl_xattr fruit streams_xattr}"
 SMB_INHERIT_PERMISSIONS="${SMB_INHERIT_PERMISSIONS:-no}"
 SMB_NFS_ACES="${SMB_NFS_ACES:-no}"
 SMB_METADATA="${SMB_METADATA:-stream}"
+IGNORE_DOS_ATTRIBUTES="${IGNORE_DOS_ATTRIBUTES:-false}"
 
 # support both PUID/TM_UID and PGID/TM_GID
 PUID="${PUID:-1000}"
@@ -245,6 +246,14 @@ then
    fruit:zero_file_id = yes
    fruit:wipe_intentionally_left_blank_rfork = yes
    fruit:delete_empty_adfiles = yes" > /etc/samba/smb.conf
+  fi
+  if [ "${IGNORE_DOS_ATTRIBUTES}" = "true" ]
+  then
+    echo "   store dos attributes = no
+   map hidden = no
+   map system = no
+   map archive = no
+   map readonly = no" >> /etc/samba/smb.conf
   fi
 
   # mkdir if needed
