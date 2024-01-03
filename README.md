@@ -41,6 +41,8 @@ To pull this image:
 
 ## Example usage for SMB
 
+__Note__: If you update the `TM_USERNAME` value, that will change the path for the persistent volume. See [persistent data path](#persistent-data-path) for more details.
+
 Example usage with `--net=host` to allow Avahi discovery; with commonly used environment variables set to their default values:
 
 ```
