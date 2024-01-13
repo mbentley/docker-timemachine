@@ -9,7 +9,7 @@ body:
       value: |
         ## Read Me First!
 
-        Thanks for using my image! Hopefully it's helpful to you. You are about to file a feature request related to the packaging or function of this Docker image, not the software itself. If you have a feature request for the software that is not related to this Docker image, check out the [Samba mailing lists](https://www.samba.org/samba/archives.html). If you're not sure if it is a problem with the Docker image or the software, file an issue here and I can assist in determining where the responsibility lies.
+        Thanks for using my image! Hopefully it's helpful to you. You are about to report a bug you found related to the packaging or function of this Docker image, not the software itself. If you have a problem with the software that is not related to this Docker image, check out the [Samba mailing lists](https://www.samba.org/samba/archives.html). If you're not sure if it is a problem with the Docker image or the software, file an issue here and I can assist in determining where the responsibility lies. Apple has changed how Time Machine functions behind the scenes a number of times and it requires samba configuration changes to resolve but a lack of documentation makes it difficult to track down.
   - type: textarea
     id: feature-problem
     attributes:
