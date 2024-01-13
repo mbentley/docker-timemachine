@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: mbentley/timemachine Discussions
     url: https://github.com/mbentley/docker-timemachine/discussions
-    about: Do you have problems or questions about how you use this container image and need help? Start a discussion and members of the community will help you out.
+    about: For help using this container image, start a discussion. Keep issues related to bugs & features, please.
   - name: Samba mailing lists
     url: https://www.samba.org/samba/archives.html
     about: For questions or issues related to Samba, use the 'samba' mailing list.
