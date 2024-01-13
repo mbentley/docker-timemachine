@@ -1,21 +1,18 @@
-name: Bug Report
-description: Report a bug with this Docker image.
-title: '[Bug]: '
-assignees:
-  - mbentley
+title: "[Help]: "
+labels: ["Help"]
 body:
   - type: markdown
     attributes:
       value: |
         ## Read Me First!
 
-        Thanks for using my image! Hopefully it's helpful to you. You are about to report a bug you found related to the packaging or function of this Docker image, not the software itself. If you have a problem with the software that is not related to this Docker image, check out the [Samba mailing lists](https://www.samba.org/samba/archives.html). If you're not sure if it is a problem with the Docker image or the software, file an issue here and I can assist in determining where the responsibility lies. Apple has changed how Time Machine functions behind the scenes a number of times and it requires samba configuration changes to resolve but a lack of documentation makes it difficult to track down.
+        Thanks for using my image! Hopefully it's helpful to you. If you're looking for help with this container image, related to the packaging or function of this Docker image, you're in the right place. If you are certain you have found a bug in the packaging, configuration, or general function of this image, go ahead and create a [Bug Report Issue](https://github.com/mbentley/docker-timemachine/issues/new/choose). In order to better help you, it would be great if you can provide as much information as you can below.
   - type: textarea
     id: description
     attributes:
-      label: Describe the Bug
+      label: Describe Your Issue or Question
       description: |
-        Please provide a clear and concise description of what the bug is.
+        Please provide a clear and concise description of what you're trying to achieve and what the problem is that you're facing.
     validations:
       required: true
   - type: textarea
@@ -23,7 +20,7 @@ body:
     attributes:
       label: Expected Behavior
       description: |
-        A clear and concise description of what you expected to happen.
+        A clear and concise description of what you expect to happen.
     validations:
       required: true
   - type: textarea
@@ -31,7 +28,7 @@ body:
     attributes:
       label: Steps to Reproduce
       description: |
-        Steps to reproduce the behavior with as much detail as possile.
+        Steps to reproduce the unexpected behavior with as much detail as possible.
       placeholder: |
         1.
         2.
@@ -94,6 +91,6 @@ body:
     attributes:
       label: Additional Context
       description: |
-        Add any other context about the problem here.
+        Add any other context about the issue here.
     validations:
       required: false
