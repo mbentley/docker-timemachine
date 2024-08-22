@@ -2,15 +2,16 @@
 FROM mbentley/debian:jessie
 LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
 
-ENV NETATALK_VERSION 3.1.12
+ARG DEBIAN_FRONTEND=noninteractive
+ENV NETATALK_VERSION="3.1.19"
 
 RUN apt-get update &&\
   apt-get install -y avahi-daemon supervisor &&\
-  apt-get install -y --no-install-recommends build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
+  apt-get install -y --no-install-recommends build-essential bzip2 ca-certificates curl libavahi-common-dev libavahi-client-dev libcrack2-dev libevent-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
   mkdir -p /tmp/netatalk-${NETATALK_VERSION} &&\
   cd /tmp/netatalk-${NETATALK_VERSION} &&\
-  curl "http://ufpr.dl.sourceforge.net/project/netatalk/netatalk/${NETATALK_VERSION}/netatalk-${NETATALK_VERSION}.tar.gz" \
-  | tar zx --directory "/tmp/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
+  curl -L "https://github.com/Netatalk/netatalk/releases/download/netatalk-$(echo "${NETATALK_VERSION}" | sed 's/\./-/g')/netatalk-${NETATALK_VERSION}.tar.bz2" -o "netatalk-${NETATALK_VERSION}.tar.bz2" &&\
+  tar xf "netatalk-${NETATALK_VERSION}.tar.bz2" --directory "/tmp/netatalk-${NETATALK_VERSION}" --strip-components=1 &&\
   ./configure \
     --with-init-style=debian-sysv \
     --with-cracklib \
@@ -22,7 +23,7 @@ RUN apt-get update &&\
     --with-tracker-pkgconfig-version=0.16 &&\
   make &&\
   make install &&\
-  apt-get purge -y build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
+  apt-get purge -y build-essential curl libavahi-common-dev libavahi-client-dev libcrack2-dev libevent-dev libssl-dev libgcrypt11-dev libkrb5-dev libpam0g-dev libwrap0-dev libdb-dev libmysqlclient-dev libacl1-dev libldap2-dev tracker &&\
   apt-get install -y libavahi-client3 libcrack2 libldap-2.4-2 libmysqlclient18 libwrap0 &&\
   apt-get -y autoremove &&\
   rm -rf /var/lib/apt/lists/* &&\
