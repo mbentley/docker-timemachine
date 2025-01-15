@@ -77,9 +77,9 @@ body:
   - type: textarea
     id: t2m2logs
     attributes:
-      label: Time Machine client diagnostics logs using Time Machine Mechanic
+      label: Time Machine client diagnostics logs using The Time Machine Mechanic
       description: |
-        If you can run the container but backups fail, another tool that can help with diagnosing the issue is [Time Machine Mechanic](https://eclecticlight.co/consolation-t2m2-and-log-utilities/) which can collect logs from your Mac (the **client**) and attempt to pinpoint the root cause of the backups failing.
+        If you can run the container but backups fail, another tool that can help with diagnosing the issue is [The Time Machine Mechanic](https://eclecticlight.co/consolation-t2m2-and-log-utilities/) which can collect logs from your Mac (the **client**) and attempt to pinpoint the root cause of the backups failing.
       placeholder: |
         logs
         go
