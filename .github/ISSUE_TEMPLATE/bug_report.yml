@@ -64,9 +64,22 @@ body:
   - type: textarea
     id: maclogs
     attributes:
-      label: Time Machine client Logs
+      label: Time Machine client logs
       description: |
         If you can run the container but backups fail, collect logs from the client by using something similar to `printf '\e[3J' && log show --predicate 'subsystem == "com.apple.TimeMachine"' --info --last 6h | grep -F 'eMac' | grep -Fv 'etat' | awk -F']' '{print substr($0,1,19), $NF}'`, adjusting the time from `6h` to something resonable to catch the error at least once and attach them.  I can't help without logs!
+      placeholder: |
+        logs
+        go
+        here
+      render: plain
+    validations:
+      required: false
+  - type: textarea
+    id: t2m2logs
+    attributes:
+      label: Time Machine Mechanic logs
+      description: |
+        If you can run the container but backups fail, another tool that can help with diagnosing the issue is [Time Machine Mechanic](https://eclecticlight.co/consolation-t2m2-and-log-utilities/) which can collect logs and attempt to pinpoint the root cause of the backups failing.
       placeholder: |
         logs
         go
